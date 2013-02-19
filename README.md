@@ -1,7 +1,7 @@
 Curry (v0.1)
 =============
 
-A fast and performant proxy written in C# using TPL. Has Caching and Pagination support.
+A fast and performant proxy and a result aggregator written in C# using TPL. Has Caching and Pagination support.
 
 What this version does?
 ----------------------
