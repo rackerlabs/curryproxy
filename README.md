@@ -1,29 +1,26 @@
-Curry (v0.1)
-=============
+Curry
+=====
+A fast and performant proxy for querying multiple instances of an API spead across globally distributed datacenters.
 
-A fast and performant proxy written in C# using TPL. Has Caching and Pagination support.
+Initial Capabilities
+--------------------
+- Definition of multiple routes for Curry to handle (see `etc/curry.ini-sample`)
+- Simple request forwarding (useful for pre-Curry versions of an API hosted in a single datacenter)
+	- Example: `GET https://oldapi.olddomain.com/v1.0/foo/bar` forwarded to `GET https://api.rackspacecloud.com/v1.0/foo/bar`
+- Advanced request forwarding to multiple datacenters
+	- Example: `GET https://api.rackspacecloud.com/ord,syd/v2.0/foo/bar` forwarded to the following:
+		- `GET https://ord.api.rackspacecloud.com/v2.0/foo/bar`
+		- `GET https://syd.api.rackspacecloud.com/v2.0/foo/bar`
+	- Requests are made in parallel
+	- JSON responses received from multiple endpoints are aggregated and returned to the client
+		- Example: `{"foo": 1}` received from ORD and `{"bar": 2}` received from SYD are aggregated to `[{"foo": 1}, {"bar": 2}]` and returned to the client. **Note:** The client is currently responsible for ordering the results. See [Roadmap](#roadmap) for future improvements.
+	- Rich, meaningful errors logged *and* returned to the client when a proxied request fails
 
-What this version does?
-----------------------
- 
- --  Relays request to a another URL and forwards the response.  Forwarding happens based on a key in the original Uri.
- 
-		Example: GET  https://api.drivesrvr.com/dfw/v1.0/user/agents   gets forwarded to https://dfw.api.drivesrvr.com/v1.0/user/agents
- 
--- For requests that require multiple forwarding, Curry forwards these requests in Parallel using C# TPL. Curry also aggregates these results.
-Curry blocks until it has received responses from all endpoints.
- 
-		Example: GET https://api.drivesrvr.com/dfw,ord,syd/v1.0/user/agents gets forwarded as three different requests as below.
-		       
-		{
-		        https://dfw.api.drivesrvr.com/v1.0/user/agents
-		        https://ord.api.drivesrvr.com/v1.0/user/agents
-		        https://syd.api.drivesrvr.com/v1.0/user/agents
-		}     
- 
-Has a basic prototype of multiple requests and aggregating results working - work in progress.
- 
--- Configuration to set up Forwarding Uri.
+Caveats
+-------
+- Only JSON responses can be aggregated
 
--- Caches the response for 30 seconds.
- 
+<a id="roadmap"></a>Roadmap
+-------
+- OData support for server-side ordering and paging support
+- Response caching for a specified time
