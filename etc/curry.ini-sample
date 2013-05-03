@@ -1,9 +1,0 @@
-# Pass-Through Route
-;[RCBU API Version 1]
-;route: https://api.example.com/v1.0/
-;forwarding_address: https://ord.api.example.com/v1.0/
-
-# Multi-Endpoint Route
-;[RCBU API Version 2]l
-;route: https://api.example.com/ord,syd/v2.0/
-;endpoints: ord, https://ord.api.example.com/v2.0/; syd, https://syd.api.example.com/v2.0/

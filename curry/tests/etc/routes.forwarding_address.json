@@ -1,0 +1,6 @@
+[
+    {
+        "route": "https://api.example.com/v1.0/",
+        "forwarding_uri": "https://1.api.example.com/v1.0/"
+    }
+]
