@@ -1,12 +1,12 @@
 from testtools import ExpectedException, TestCase
 
 from curry.curry import Curry
-from curry.errors import RouteError
+from curry.errors import ConfigError
 
 
 class TestCurryCurry_Process_Routes(TestCase):
     def test_config_invalid_json(self):
-        with ExpectedException(RouteError):
+        with ExpectedException(ConfigError):
             Curry('curry/tests/etc/routes.invalid_json.json')
 
     def test_config_invalid_path(self):
