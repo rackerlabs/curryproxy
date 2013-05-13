@@ -1,18 +1,18 @@
 [
 	{
 		"route": "https://api.example.com/v1.0/",
-		"forwarding_uri": "https://1.api.example.com/v1.0/"
+		"forwarding_url": "https://1.api.example.com/v1.0/"
 	},
 	{
 		"route": "https://api.example.com/{Endpoint_IDs}/v2.0/",
 		"endpoints": [
 			{
 				"id": "1",
-				"uri": "https://1.api.example.com/v2.0/"
+				"url": "https://1.api.example.com/v2.0/"
 			},
 			{
 				"id": "2",
-				"uri": "https://2.api.example.com/v2.0/"
+				"url": "https://2.api.example.com/v2.0/"
 			}
 		]
 	}
