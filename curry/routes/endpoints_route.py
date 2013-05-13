@@ -18,7 +18,9 @@ class EndpointsRoute(RouteBase):
         self._endpoints = endpoints
 
     def match(self, request_url):
-        if self._find_pattern_for_request(request_url) is not None:
+        url_pattern = self._find_pattern_for_request(request_url)
+        if url_pattern is not None:
+            print 'Matched route:', url_pattern
             return True
 
         return False
@@ -44,6 +46,7 @@ class EndpointsRoute(RouteBase):
         for destination_url in destination_urls:
             request.headers['Host'] = urlparse(destination_url).netloc
 
+            print 'Requesting endpoint:', destination_url
             requests_response = requests.request(request.method,
                                                  destination_url,
                                                  data=request.body,
@@ -86,7 +89,6 @@ class EndpointsRoute(RouteBase):
         endpoint_urls = []
         for endpoint_id in endpoint_ids.group("endpoint_ids").split(','):
             url = self._endpoints[endpoint_id] + trailing_route
-            print url
             endpoint_urls.append(url)
 
         return endpoint_urls

@@ -14,7 +14,9 @@ class ForwardingRoute(RouteBase):
         self._forwarding_url = forwarding_url
 
     def match(self, request_url):
-        if self._find_pattern_for_request(request_url) is not None:
+        url_pattern = self._find_pattern_for_request(request_url)
+        if url_pattern is not None:
+            print 'Matched route:', url_pattern
             return True
 
         return False
@@ -32,6 +34,7 @@ class ForwardingRoute(RouteBase):
         destination_url = self._create_forwarded_url(request.url)
         request.headers['Host'] = urlparse(destination_url).netloc
 
+        print 'Requesting endpoint:', destination_url
         requests_response = requests.request(request.method,
                                              destination_url,
                                              data=request.body,
