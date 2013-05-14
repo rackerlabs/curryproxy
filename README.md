@@ -1,10 +1,10 @@
-Curry
+Curry [![Build Status](https://jenkins.drivesrvr-dev.com/job/curry-master/badge/icon)](https://jenkins.drivesrvr-dev.com/job/curry-master/)
 =====
 A fast and performant proxy for querying multiple instances of an API spead across globally distributed datacenters.
 
 Initial Capabilities
 --------------------
-- Definition of multiple routes for Curry to handle (see `etc/curry.ini-sample`)
+- Definition of multiple routes for Curry to handle (see `etc/routes.sample.json`)
 - Simple request forwarding (useful for pre-Curry versions of an API hosted in a single datacenter)
 	- Example: `GET https://oldapi.olddomain.com/v1.0/foo/bar` forwarded to `GET https://api.rackspacecloud.com/v1.0/foo/bar`
 - Advanced request forwarding to multiple datacenters
