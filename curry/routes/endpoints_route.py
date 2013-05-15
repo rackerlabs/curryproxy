@@ -1,12 +1,11 @@
-import json
 import re
 from urlparse import urlparse
 
-from webob import Response
-import requests
+import grequests
 
-from curry.errors import RequestError
+from curry.responses import MultipleResponse
 from curry.routes.route_base import RouteBase
+from curry.responses import SingleResponse
 
 
 ENDPOINTS_WILDCARD = '{Endpoint_IDs}'
@@ -16,14 +15,6 @@ class EndpointsRoute(RouteBase):
     def __init__(self, url_patterns, endpoints):
         self._url_patterns = url_patterns
         self._endpoints = endpoints
-
-    def match(self, request_url):
-        url_pattern = self._find_pattern_for_request(request_url)
-        if url_pattern is not None:
-            print 'Matched route:', url_pattern
-            return True
-
-        return False
 
     def _find_pattern_for_request(self, request_url):
         wildcard_escaped = re.escape(ENDPOINTS_WILDCARD)
@@ -40,38 +31,37 @@ class EndpointsRoute(RouteBase):
         return None
 
     def issue_request(self, request):
-        destination_urls = self._create_forwarded_urls(request.url)
+        original_request = request.copy()
 
-        requests_responses = []
+        destination_urls = self._create_forwarded_urls(request.url)
+        # Take advantage of gzip even if the client doesn't support it
+        request.headers['Accept-Encoding'] = 'gzip,identity'
+
+        unsent_requests = []
         for destination_url in destination_urls:
             request.headers['Host'] = urlparse(destination_url).netloc
-
+ 
+            ##### DEV #####
             print 'Requesting endpoint:', destination_url
-            requests_response = requests.request(request.method,
-                                                 destination_url,
-                                                 data=request.body,
-                                                 headers=request.headers,
-                                                 allow_redirects=False,
-                                                 verify=True)
-            requests_responses.append(requests_response)
+            #####
+            
+            unsent_requests.append(grequests.request(request.method,
+                                                     destination_url,
+                                                     data=request.body,
+                                                     headers=request.headers,
+                                                     allow_redirects=False,
+                                                     verify=True))
 
-        webob_response = Response()
-        webob_response.status = requests_responses[0].status_code
-        webob_response.headers = requests_responses[0].headers
+        requests_responses = grequests.map(unsent_requests, stream=True)
 
-        if len(requests_responses) > 1:
-            result_list = []
-            for response in requests_responses:
-                body = response.json()
-                if isinstance(body, list):
-                    result_list += body
-                else:
-                    result_list.append(body)
-            webob_response.body = json.dumps(result_list)
+        if len(requests_responses) == 1:
+            single_response = SingleResponse(original_request,
+                                             requests_responses[0])
+            return single_response.response
         else:
-            webob_response.body = json.dumps(requests_responses[0].json())
-
-        return webob_response
+            multiple_response = MultipleResponse(original_request,
+                                                 requests_responses)
+            return multiple_response.response
 
     def _create_forwarded_urls(self, request_url):
         # Extract endpoints from request

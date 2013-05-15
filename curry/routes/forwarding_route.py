@@ -2,24 +2,16 @@ import re
 from urlparse import urlparse
 
 import requests
-from webob import Response
 
 from curry.errors import RequestError
 from curry.routes.route_base import RouteBase
+from curry.responses import SingleResponse
 
 
 class ForwardingRoute(RouteBase):
     def __init__(self, url_patterns, forwarding_url):
         self._url_patterns = url_patterns
         self._forwarding_url = forwarding_url
-
-    def match(self, request_url):
-        url_pattern = self._find_pattern_for_request(request_url)
-        if url_pattern is not None:
-            print 'Matched route:', url_pattern
-            return True
-
-        return False
 
     def _find_pattern_for_request(self, request_url):
         for url_pattern in self._url_patterns:
@@ -31,23 +23,35 @@ class ForwardingRoute(RouteBase):
         return None
 
     def issue_request(self, request):
+        original_request = request.copy()
+
         destination_url = self._create_forwarded_url(request.url)
+        # Take advantage of gzip even if the client doesn't support it
+        request.headers['Accept-Encoding'] = 'gzip,identity'
         request.headers['Host'] = urlparse(destination_url).netloc
 
-        print 'Requesting endpoint:', destination_url
+        ##### DEV #####
+        print 'Set Outgoing Request Headers'
+        for key in request.headers:
+            print '\t', key, request.headers[key]
+        print 'Requesting endpoint:', destination_url, '...',
+        #####
         requests_response = requests.request(request.method,
                                              destination_url,
                                              data=request.body,
                                              headers=request.headers,
                                              allow_redirects=False,
-                                             verify=True)
+                                             verify=True,
+                                             stream=True)
+        ##### DEV #####
+        print 'done.'
+        print 'Actual Outgoing Request Headers'
+        for key in requests_response.request.headers:
+            print '\t', key, requests_response.request.headers[key]
+        #####
 
-        webob_response = Response()
-        webob_response.status = requests_response.status_code
-        webob_response.headers = requests_response.headers
-        webob_response.body = requests_response.content
-
-        return webob_response
+        single_response = SingleResponse(original_request, requests_response)
+        return single_response.response
 
     def _create_forwarded_url(self, request_url):
         url_pattern = self._find_pattern_for_request(request_url)

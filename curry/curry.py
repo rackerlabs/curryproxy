@@ -22,6 +22,11 @@ class Curry(object):
 
     def __call__(self, environ, start_response):
         request = Request(environ)
+        ##### DEV #####
+        print 'Incoming Request Headers'
+        for key in request.headers:
+            print '\t', key, request.headers[key]
+        #####
         response = None
 
         try:
@@ -32,8 +37,6 @@ class Curry(object):
             response.status = 403
             response.body = str(re)
 
-        # TODO: Remove this temporary modification of Content-Encoding
-        response.content_encoding = None
         start_response(response.status, response.headerlist)
         return response.body
 
