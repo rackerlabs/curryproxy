@@ -15,7 +15,7 @@ class MultipleResponse(ResponseBase):
                           or 'application/*' in request.accept
                           or '*/*' in request.accept)
         json_returned = all('application/json'
-                            in response.headers['content-type']
+                            in response.headers['Content-Type']
                             for response in responses)
         responses_succeeded = all(response.status_code == 200
                                   for response in responses)
