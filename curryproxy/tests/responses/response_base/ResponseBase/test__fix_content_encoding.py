@@ -2,12 +2,12 @@ from mock import Mock
 from webob import Response
 from testtools import TestCase
 
-from curry.responses.response_base import ResponseBase
+from curryproxy.responses.response_base import ResponseBase
 
 
-class TestResponseBaseResponseBase_Fix_Headers(TestCase):
+class Test_Fix_Content_Encoding(TestCase):
     def setUp(self):
-        super(TestResponseBaseResponseBase_Fix_Headers, self).setUp()
+        super(Test_Fix_Content_Encoding, self).setUp()
         
         self.response_data = '{"test": "json"}'
 
@@ -25,7 +25,7 @@ class TestResponseBaseResponseBase_Fix_Headers(TestCase):
         response._response.content_encoding = 'gzip'
         response._response.body = self.response_data_gzipped
 
-        response._fix_headers()
+        response._fix_content_encoding()
 
         self.assertEquals(self.response_data_gzipped, response._response.body)
 
@@ -38,7 +38,7 @@ class TestResponseBaseResponseBase_Fix_Headers(TestCase):
         response._response.content_encoding = ''
         response._response.body = self.response_data
 
-        response._fix_headers()
+        response._fix_content_encoding()
 
         self.assertEquals(self.response_data_gzipped, response._response.body)
 
@@ -51,7 +51,7 @@ class TestResponseBaseResponseBase_Fix_Headers(TestCase):
         response._response.content_encoding = None
         response._response.body = self.response_data
 
-        response._fix_headers()
+        response._fix_content_encoding()
 
         self.assertEquals(self.response_data_gzipped, response._response.body)
 
@@ -64,7 +64,7 @@ class TestResponseBaseResponseBase_Fix_Headers(TestCase):
         response._response.content_encoding = 'gzip'
         response._response.body = self.response_data_gzipped
 
-        response._fix_headers()
+        response._fix_content_encoding()
 
         self.assertEquals(self.response_data, response._response.body)
 
@@ -77,7 +77,7 @@ class TestResponseBaseResponseBase_Fix_Headers(TestCase):
         response._response.content_encoding = ''
         response._response.body = self.response_data
 
-        response._fix_headers()
+        response._fix_content_encoding()
 
         self.assertEquals(self.response_data, response._response.body)
 
@@ -90,7 +90,7 @@ class TestResponseBaseResponseBase_Fix_Headers(TestCase):
         response._response.content_encoding = None
         response._response.body = self.response_data
 
-        response._fix_headers()
+        response._fix_content_encoding()
 
         self.assertEquals(self.response_data, response._response.body)
 
@@ -103,7 +103,7 @@ class TestResponseBaseResponseBase_Fix_Headers(TestCase):
         response._response.content_encoding = 'gzip'
         response._response.body = self.response_data_gzipped
 
-        response._fix_headers()
+        response._fix_content_encoding()
 
         self.assertEquals(self.response_data, response._response.body)
 
@@ -116,7 +116,7 @@ class TestResponseBaseResponseBase_Fix_Headers(TestCase):
         response._response.content_encoding = ''
         response._response.body = self.response_data
 
-        response._fix_headers()
+        response._fix_content_encoding()
 
         self.assertEquals(self.response_data, response._response.body)
 
@@ -129,6 +129,6 @@ class TestResponseBaseResponseBase_Fix_Headers(TestCase):
         response._response.content_encoding = None
         response._response.body = self.response_data
 
-        response._fix_headers()
+        response._fix_content_encoding()
 
         self.assertEquals(self.response_data, response._response.body)

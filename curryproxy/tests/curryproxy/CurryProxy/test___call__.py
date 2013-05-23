@@ -2,16 +2,16 @@ from mock import Mock
 from webob import Response
 from testtools import TestCase
 
-from curry.curry import Curry
-from curry.routes import route_factory
-from curry.tests.utils import StartResponseMock
+from curryproxy.curryproxy import CurryProxy
+from curryproxy.routes import route_factory
+from curryproxy.tests.utils import StartResponseMock
 
 
-class TestCurryCurry__Call__(TestCase):
+class Test__Call__(TestCase):
     def setUp(self):
-        super(TestCurryCurry__Call__, self).setUp()
+        super(Test__Call__, self).setUp()
 
-        self.curry = Curry('curry/tests/etc/routes.empty.json')
+        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json')
 
     def test_matched_route(self):
         # Setup route

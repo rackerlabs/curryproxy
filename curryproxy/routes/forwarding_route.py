@@ -3,9 +3,9 @@ from urlparse import urlparse
 
 import requests
 
-from curry.errors import RequestError
-from curry.routes.route_base import RouteBase
-from curry.responses import SingleResponse
+from curryproxy.errors import RequestError
+from curryproxy.routes.route_base import RouteBase
+from curryproxy.responses import SingleResponse
 
 
 class ForwardingRoute(RouteBase):

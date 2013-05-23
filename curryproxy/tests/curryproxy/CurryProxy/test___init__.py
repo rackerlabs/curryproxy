@@ -1,17 +1,17 @@
 import testtools
 
-from curry.curry import Curry
+from curryproxy.curryproxy import CurryProxy
 
 
-class TestCurryCurry___init__(testtools.TestCase):
+class Test___Init__(testtools.TestCase):
     def test_config_default(self):
         try:
-            Curry()
+            CurryProxy()
         except IOError:
             self.fail('Requires the default /etc/curry/routes.json file to '
                       'be present & valid.')
 
     def test_config_supplied(self):
-        curry = Curry('curry/tests/etc/routes.forwarding_address.json')
+        curry = CurryProxy('curryproxy/tests/etc/routes.forwarding_address.json')
 
         self.assertEqual(1, len(curry._routes))

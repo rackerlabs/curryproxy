@@ -1,6 +1,6 @@
 from webob import Response
 
-from curry.responses.response_base import ResponseBase
+from curryproxy.responses.response_base import ResponseBase
 
 
 class SingleResponse(ResponseBase):

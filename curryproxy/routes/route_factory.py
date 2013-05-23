@@ -1,6 +1,6 @@
-from curry.errors import ConfigError
-from curry.routes import EndpointsRoute
-from curry.routes import ForwardingRoute
+from curryproxy.errors import ConfigError
+from curryproxy.routes import EndpointsRoute
+from curryproxy.routes import ForwardingRoute
 
 
 def parse_dict(route_config):
@@ -8,6 +8,7 @@ def parse_dict(route_config):
 
     if 'route' not in route_config:
         raise ConfigError('Each route must contain "route"')
+    # Convert to list for later support of multiple routes per endpoint
     url_patterns = [route_config['route']]
 
     if ('forwarding_url' in route_config and

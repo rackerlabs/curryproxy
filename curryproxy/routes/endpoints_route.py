@@ -3,9 +3,9 @@ from urlparse import urlparse
 
 import grequests
 
-from curry.responses import MultipleResponse
-from curry.routes.route_base import RouteBase
-from curry.responses import SingleResponse
+from curryproxy.responses import MultipleResponse
+from curryproxy.routes.route_base import RouteBase
+from curryproxy.responses import SingleResponse
 
 
 ENDPOINTS_WILDCARD = '{Endpoint_IDs}'
@@ -40,11 +40,11 @@ class EndpointsRoute(RouteBase):
         unsent_requests = []
         for destination_url in destination_urls:
             request.headers['Host'] = urlparse(destination_url).netloc
- 
+
             ##### DEV #####
             print 'Requesting endpoint:', destination_url
             #####
-            
+
             unsent_requests.append(grequests.request(request.method,
                                                      destination_url,
                                                      data=request.body,
@@ -73,7 +73,9 @@ class EndpointsRoute(RouteBase):
         endpoint_ids = re.match(match_expression, request_url)
 
         # Extract trailing portion of URL
-        trailing_route = request_url[len(url_pattern_parts[0] + endpoint_ids.group("endpoint_ids") + url_pattern_parts[1]):]
+        trailing_route = request_url[len(url_pattern_parts[0]
+                                         + endpoint_ids.group("endpoint_ids")
+                                         + url_pattern_parts[1]):]
 
         # Create final URLs to be forwarded
         endpoint_urls = []

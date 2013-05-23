@@ -6,8 +6,8 @@ from routes import route_factory
 from errors import ConfigError, RequestError
 
 
-class Curry(object):
-    def __init__(self, routes_file='/etc/curry/routes.json'):
+class CurryProxy(object):
+    def __init__(self, routes_file='/etc/curryproxy/routes.json'):
         self._routes = []
         self._process_routes(routes_file)
 

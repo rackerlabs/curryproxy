@@ -2,16 +2,16 @@ import StringIO
 
 from mock import Mock
 from requests import Response
-from curry.responses.response_base import ResponseBase
 from webob import Request
 from testtools import TestCase
 
-from curry.responses import SingleResponse
+from curryproxy.responses.response_base import ResponseBase
+from curryproxy.responses import SingleResponse
 
 
-class TestSingleResponseSingleResponse__Init__(TestCase):
+class Test__Init__(TestCase):
     def setUp(self):
-        super(TestSingleResponseSingleResponse__Init__, self).setUp()
+        super(Test__Init__, self).setUp()
 
         self.request = Request.blank('http://www.example.com/test')
 
@@ -23,11 +23,14 @@ class TestSingleResponseSingleResponse__Init__(TestCase):
         self.response.raw = output
 
     def test__fix_headers(self):
-        ResponseBase._fix_headers = Mock(return_value='test')
+        old_call = ResponseBase._fix_headers
+        ResponseBase._fix_headers = Mock()
 
         SingleResponse(self.request, self.response)
 
         ResponseBase._fix_headers.assert_called_with()
+
+        ResponseBase._fix_headers = old_call
 
     def test_response(self):
         single_response = SingleResponse(self.request, self.response)

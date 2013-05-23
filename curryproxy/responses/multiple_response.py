@@ -2,7 +2,7 @@ import json
 
 from webob import Response
 
-from curry.responses.response_base import ResponseBase
+from curryproxy.responses.response_base import ResponseBase
 
 
 class MultipleResponse(ResponseBase):
@@ -11,16 +11,17 @@ class MultipleResponse(ResponseBase):
         self._responses = responses
         self._response = Response()
 
-        json_requested = ('application/json' in request.accept
-                          or 'application/*' in request.accept
-                          or '*/*' in request.accept)
-        json_returned = all('application/json'
-                            in response.headers['Content-Type']
+        json_returned = all(response.headers['Content-Type'] is not None
+                            and 'application/json'
+                            in response.headers['Content-Type'].lower()
                             for response in responses)
         responses_succeeded = all(response.status_code == 200
                                   for response in responses)
 
-        if json_requested and json_returned and responses_succeeded:
+        if (request.method == 'GET'
+                and 'application/json' in request.accept
+                and json_returned
+                and responses_succeeded):
             self._merge_responses()
         else:
             self._aggregate_responses()

@@ -1,15 +1,15 @@
 from testtools import ExpectedException, TestCase
 
-from curry.curry import Curry
-from curry.errors import RequestError
-from curry.routes import route_factory
+from curryproxy.curryproxy import CurryProxy
+from curryproxy.errors import RequestError
+from curryproxy.routes import route_factory
 
 
-class TestCurryCurry_Match_Route(TestCase):
+class Test_Match_Route(TestCase):
     def setUp(self):
-        super(TestCurryCurry_Match_Route, self).setUp()
+        super(Test_Match_Route, self).setUp()
 
-        self.curry = Curry('curry/tests/etc/routes.empty.json')
+        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json')
 
     def test_match(self):
         route_config = {'route': 'https://www.example.com',
