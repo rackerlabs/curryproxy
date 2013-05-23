@@ -4,7 +4,7 @@ from testtools import TestCase
 
 import curry
 from curry.curry import Curry
-from curry.route import Route
+from curry.routes import route_factory
 
 
 class TestCurryCurry_Issue_Request(TestCase):
@@ -17,7 +17,7 @@ class TestCurryCurry_Issue_Request(TestCase):
         self.route_config = {'route': 'https://www.example.com',
                              'forwarding_url': 'https://' +
                              self.forwarding_url_host}
-        self.route = Route(self.route_config)
+        self.route = route_factory.parse_dict(self.route_config)
 
         self.curry._routes.append(self.route)
 
@@ -27,7 +27,7 @@ class TestCurryCurry_Issue_Request(TestCase):
                                       ('Content-Type', 'application/json'),
                                       ('Host', 'new.example.com')]
         self.mock_response.content = 'content'
-        curry.curry.requests.request = Mock(return_value=self.mock_response)
+        curry.routes.forwarding_route.requests.request = Mock(return_value=self.mock_response)
 
     def test_verify_response(self):
         request = Request.blank('https://www.example.com/test')
