@@ -58,7 +58,7 @@ class MultipleResponse(ResponseBase):
             result = {}
             result['url'] = response.url
             result['status'] = response.status_code
-            result['headers'] = response.headers
+            result['headers'] = dict(response.headers)
             result['body'] = response.content
 
             results.append(result)

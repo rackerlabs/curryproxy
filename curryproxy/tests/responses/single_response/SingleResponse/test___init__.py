@@ -18,8 +18,10 @@ class Test__Init__(TestCase):
         self.response = Response()
         self.response.status_code = 201
         self.response.headers = {'Content-Type': 'application/json'}
+        self.response_body = '{"some": "json"}'
         output = StringIO.StringIO()
-        output.write('{"some": "json"}')
+        output.write(self.response_body)
+        output.seek(0)
         self.response.raw = output
 
     def test__fix_headers(self):
@@ -52,7 +54,7 @@ class Test__Init__(TestCase):
     def test_response_body(self):
         single_response = SingleResponse(self.request, self.response)
 
-        self.assertEqual(self.response.content, single_response.response.body)
+        self.assertEqual(self.response_body, single_response.response.body)
 
     def test_request(self):
         single_response = SingleResponse(self.request, self.response)

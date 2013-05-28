@@ -18,7 +18,8 @@ class Test__Init__(TestCase):
         self.response.headers = {'Content-Type': 'application/json'}
 
     def setUp__merge_responses(self):
-        #TODO: Restore these during tearDown
+        self._aggregate_responses = MultipleResponse._aggregate_responses
+        self._merge_responses = MultipleResponse._merge_responses
         MultipleResponse._aggregate_responses = Mock()
         MultipleResponse._merge_responses = Mock()
 
@@ -144,3 +145,11 @@ class Test__Init__(TestCase):
         MultipleResponse(self.request, self.responses)
 
         MultipleResponse._merge_responses.assert_called_with()
+
+    def tearDown(self):
+        super(Test__Init__, self).tearDown()
+
+        if hasattr(self, '_aggregate_responses'):
+            MultipleResponse._aggregate_responses = self._aggregate_responses
+        if hasattr(self, '_merge_responses'):
+            MultipleResponse._merge_responses = self._merge_responses
