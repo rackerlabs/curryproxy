@@ -2,29 +2,29 @@ from mock import Mock
 from webob import Response
 from testtools import TestCase
 
-from curry.curry import Curry
-from curry.route import Route
-from curry.tests.utils import StartResponseMock
+from curryproxy.curryproxy import CurryProxy
+from curryproxy.routes import route_factory
+from curryproxy.tests.utils import StartResponseMock
 
 
-class TestCurryCurry__Call__(TestCase):
+class Test__Call__(TestCase):
     def setUp(self):
-        super(TestCurryCurry__Call__, self).setUp()
+        super(Test__Call__, self).setUp()
 
-        self.curry = Curry('curry/tests/etc/routes.empty.json')
+        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json')
 
     def test_matched_route(self):
         # Setup route
         self.route_config = {'route': 'https://www.example.com',
                              'forwarding_url': 'https://new.example.com'}
-        self.route = Route(self.route_config)
+        self.route = route_factory.parse_dict(self.route_config)
         self.curry._routes.append(self.route)
 
         # Mocked response
         mock_response = Response()
         mock_response.status = 200
         mock_response.body = 'Response Body'
-        self.curry._issue_request = Mock(return_value=mock_response)
+        self.route.issue_request = Mock(return_value=mock_response)
 
         # Create request
         environ = {'wsgi.url_scheme': 'https',
