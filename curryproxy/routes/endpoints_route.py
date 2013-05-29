@@ -34,25 +34,29 @@ class EndpointsRoute(RouteBase):
         original_request = request.copy()
 
         destination_urls = self._create_forwarded_urls(request.url)
-        # Take advantage of gzip even if the client doesn't support it
+
+        # Use gzip even if the original requestor didn't support it
         request.headers['Accept-Encoding'] = 'gzip,identity'
+        # Host header is automatically added for each request by grequests
+        del request.headers['Host']
 
-        unsent_requests = []
+        ### DEV #####
+        print 'Outgoing Request URLs'
         for destination_url in destination_urls:
-            request.headers['Host'] = urlparse(destination_url).netloc
+            print '\t', destination_url
+        print 'Outgoing Request Headers'
+        for key in request.headers:
+            print '\t', key, request.headers[key]
+        #####
 
-            ##### DEV #####
-            print 'Requesting endpoint:', destination_url
-            #####
-
-            unsent_requests.append(grequests.request(request.method,
-                                                     destination_url,
-                                                     data=request.body,
-                                                     headers=request.headers,
-                                                     allow_redirects=False,
-                                                     verify=True))
-
-        requests_responses = grequests.map(unsent_requests, stream=True)
+        rs = (grequests.request(request.method,
+                                destination_url,
+                                data=request.body,
+                                headers=request.headers,
+                                allow_redirects=False,
+                                verify=True)
+              for destination_url in destination_urls)
+        requests_responses = grequests.map(rs)
 
         if len(requests_responses) == 1:
             single_response = SingleResponse(original_request,
