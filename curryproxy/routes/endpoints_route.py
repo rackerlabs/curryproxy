@@ -1,5 +1,4 @@
 import re
-from urlparse import urlparse
 
 import grequests
 
@@ -49,14 +48,14 @@ class EndpointsRoute(RouteBase):
             print '\t', key, request.headers[key]
         #####
 
-        rs = (grequests.request(request.method,
-                                destination_url,
-                                data=request.body,
-                                headers=request.headers,
-                                allow_redirects=False,
-                                verify=True)
-              for destination_url in destination_urls)
-        requests_responses = grequests.map(rs)
+        requests = (grequests.request(request.method,
+                                      destination_url,
+                                      data=request.body,
+                                      headers=request.headers,
+                                      allow_redirects=False,
+                                      verify=True)
+                    for destination_url in destination_urls)
+        requests_responses = grequests.map(requests, stream=True)
 
         if len(requests_responses) == 1:
             single_response = SingleResponse(original_request,
