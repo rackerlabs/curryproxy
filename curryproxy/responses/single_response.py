@@ -8,7 +8,8 @@ class SingleResponse(ResponseBase):
         self._request = request
         self._response = Response()
 
-        self._response.status = response.status_code
+        self._response.status = '{0} {1}'.format(response.status_code,
+                                                 response.reason)
         self._response.headers = response.headers
         self._response.body_file = response.raw
 

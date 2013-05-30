@@ -17,6 +17,7 @@ class Test__Init__(TestCase):
 
         self.response = Response()
         self.response.status_code = 201
+        self.response.reason = 'Created Custom'
         self.response.headers = {'Content-Type': 'application/json'}
         self.response_body = '{"some": "json"}'
         output = StringIO.StringIO()
@@ -42,8 +43,10 @@ class Test__Init__(TestCase):
     def test_response_status(self):
         single_response = SingleResponse(self.request, self.response)
 
-        self.assertEqual(self.response.status_code,
-                         single_response.response.status_code)
+        expected_status = '{0} {1}'.format(self.response.status_code,
+                                           self.response.reason)
+
+        self.assertEqual(expected_status, single_response.response.status)
 
     def test_response_headers(self):
         single_response = SingleResponse(self.request, self.response)
