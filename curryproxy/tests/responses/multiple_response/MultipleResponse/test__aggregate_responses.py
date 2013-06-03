@@ -105,18 +105,6 @@ class Test_Aggregate_Responses(TestCase):
 
         self.assertEqual(200, multiple_response.response.status_code)
 
-    def test_status_code_200_default(self):
-        response1 = self.setUpResponse(self.headers, self.body_json,
-                                       status_code=0)
-        response2 = self.setUpResponse(self.headers, self.body_json,
-                                       status_code=10)
-
-        multiple_response = self.setUpMultipleResponse([response1, response2])
-
-        multiple_response._aggregate_responses()
-
-        self.assertEqual(200, multiple_response.response.status_code)
-
     def test_status_code_300(self):
         response1 = self.setUpResponse(self.headers, self.body_json,
                                        status_code=302)
@@ -151,4 +139,31 @@ class Test_Aggregate_Responses(TestCase):
 
         multiple_response._aggregate_responses()
 
-        self.assertEqual(500, multiple_response.response.status_code)
+        self.assertEqual(502, multiple_response.response.status_code)
+
+    def test_status_code_502_default(self):
+        response1 = self.setUpResponse(self.headers, self.body_json,
+                                       status_code=0)
+        response2 = self.setUpResponse(self.headers, self.body_json,
+                                       status_code=10)
+
+        multiple_response = self.setUpMultipleResponse([response1, response2])
+
+        multiple_response._aggregate_responses()
+
+        self.assertEqual(502, multiple_response.response.status_code)
+
+    def test_status_code_greater_than_500(self):
+        response1 = self.setUpResponse(self.headers, self.body_json,
+                                       status_code=600)
+        response2 = self.setUpResponse(self.headers, self.body_json,
+                                       status_code=200)
+        response3 = self.setUpResponse(self.headers, self.body_json,
+                                       status_code=900)
+
+        responses = [response1, response2, response3]
+        multiple_response = self.setUpMultipleResponse(responses)
+
+        multiple_response._aggregate_responses()
+
+        self.assertEqual(502, multiple_response.response.status_code)
