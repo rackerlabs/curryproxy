@@ -1,6 +1,6 @@
 import json
-import StringIO
 
+from mock import Mock
 from requests import Response
 from webob import Response as WebObResponse
 from webob import Request
@@ -32,10 +32,10 @@ class Test_Merge_Responses(TestCase):
         response = Response()
         response.status_code = 200
         response.headers = headers
-        output = StringIO.StringIO()
-        output.write(body)
-        output.seek(0)
-        response.raw = output
+        stream = Mock()
+        stream.read = Mock()
+        stream.read.side_effect = [body, None]
+        response.raw = stream
 
         return response
 

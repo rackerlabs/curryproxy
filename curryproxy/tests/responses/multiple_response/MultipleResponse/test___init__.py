@@ -63,7 +63,7 @@ class Test__Init__(TestCase):
         # requests library handles case insensitivity of header field names so
         # we don't need to test it here
         self.responses[0].headers['Content-Type'] = 'application/json'
-        self.responses[1].headers['Content-Type'] = None
+        del self.responses[1].headers['Content-Type']
 
         MultipleResponse(self.request, self.responses)
 

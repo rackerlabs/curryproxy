@@ -1,7 +1,4 @@
-import StringIO
-
-import requests
-from requests import Request
+from mock import Mock
 from requests import Response
 from testtools import TestCase
 from webob import Request as WebObRequest
@@ -14,33 +11,24 @@ class Test_Aggregate_Responses(TestCase):
     def setUp(self):
         super(Test_Aggregate_Responses, self).setUp()
 
-        # request = Request.blank('http://www.example.com/test')
-
         self.headers = {'Content-Type': 'application/json'}
         self.body_html = '<html><body><h1>Hello World</h1></body></html>'
         self.body_json = '{"some": "json"}'
-        # self.response1 = self.setUpResponse(self.headers1, self.body1)
-        # self.headers2 = {'Content-Type': 'application/json'}
-        # self.body2 = {"more": "json"}
-        # self.response2 = self.setUpResponse(self.headers2, self.body2)
-        # responses = [self.response1, self.response2]
-
-        # self.multiple_response = MultipleResponse(request, responses)
-
-        # Clear out _response since that's what we'll be validating
-        # self.multiple_response._response = WebObResponse()
 
     def setUpResponse(self, headers, body, status_code=200):
         if not headers:
             headers = {'Content-Type': 'application/json'}
 
+        def decode_content():
+            pass
+
         response = Response()
         response.status_code = status_code
         response.headers = headers
-        output = StringIO.StringIO()
-        output.write(body)
-        output.seek(0)
-        response.raw = output
+        stream = Mock()
+        stream.read = Mock()
+        stream.read.side_effect = [body, None]
+        response.raw = stream
 
         return response
 
