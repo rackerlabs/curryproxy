@@ -11,7 +11,7 @@ class MultipleResponse(ResponseBase):
         self._responses = responses
         self._response = Response()
 
-        json_returned = all(response.headers['Content-Type'] is not None
+        json_returned = all('Content-Type' in response.headers
                             and 'application/json'
                             in response.headers['Content-Type'].lower()
                             for response in responses)
