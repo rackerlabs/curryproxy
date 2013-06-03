@@ -60,7 +60,7 @@ class Test_Aggregate_Responses(TestCase):
         response1.url = 'http://1.example.com'
         response2 = self.setUpResponse({'Content-Type': 'text/html'},
                                        self.body_html, status_code=404)
-        response2.reason = 'Not Found'
+        response2.reason = 'Not Found Custom'
         response2.url = 'http://2.example.com'
 
         multiple_response = self.setUpMultipleResponse([response1, response2])
@@ -76,7 +76,7 @@ class Test_Aggregate_Responses(TestCase):
         self.assertEqual(self.body_json, response[0]['body'])
 
         self.assertEqual(response2.url, response[1]['url'])
-        self.assertEqual('404 Not Found', response[1]['status'])
+        self.assertEqual('404 Not Found Custom', response[1]['status'])
         self.assertEqual(response2.headers, response[1]['headers'])
         self.assertEqual(self.body_html, response[1]['body'])
 
