@@ -41,6 +41,8 @@ class CurryProxy(object):
         request = Request(environ)
         response = None
 
+        logging.info('Received request: {0}'.format(request.url))
+
         try:
             matched_route = self._match_route(request.url)
             response = matched_route.issue_request(request)
