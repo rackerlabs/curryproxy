@@ -22,11 +22,6 @@ class CurryProxy(object):
 
     def __call__(self, environ, start_response):
         request = Request(environ)
-        ##### DEV #####
-        print 'Incoming Request Headers'
-        for key in request.headers:
-            print '\t', key, request.headers[key]
-        #####
         response = None
 
         try:

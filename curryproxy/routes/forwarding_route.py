@@ -30,12 +30,6 @@ class ForwardingRoute(RouteBase):
         request.headers['Accept-Encoding'] = 'gzip,identity'
         request.headers['Host'] = urlparse(destination_url).netloc
 
-        ##### DEV #####
-        print 'Set Outgoing Request Headers'
-        for key in request.headers:
-            print '\t', key, request.headers[key]
-        print 'Requesting endpoint:', destination_url, '...',
-        #####
         requests_response = requests.request(request.method,
                                              destination_url,
                                              data=request.body,
@@ -43,12 +37,6 @@ class ForwardingRoute(RouteBase):
                                              allow_redirects=False,
                                              verify=True,
                                              stream=True)
-        ##### DEV #####
-        print 'done.'
-        print 'Actual Outgoing Request Headers'
-        for key in requests_response.request.headers:
-            print '\t', key, requests_response.request.headers[key]
-        #####
 
         single_response = SingleResponse(original_request, requests_response)
         return single_response.response
