@@ -1,5 +1,6 @@
 import json
 import logging
+import logging.config
 
 from webob import Request
 from webob import Response
