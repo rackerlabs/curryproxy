@@ -9,7 +9,8 @@ class Test_Match_Route(TestCase):
     def setUp(self):
         super(Test_Match_Route, self).setUp()
 
-        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json')
+        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json',
+                                'curryproxy/tests/etc/logging.console.conf')
 
     def test_match(self):
         route_config = {'route': 'https://www.example.com',
