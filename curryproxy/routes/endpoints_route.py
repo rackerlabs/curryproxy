@@ -39,15 +39,6 @@ class EndpointsRoute(RouteBase):
         # Host header is automatically added for each request by grequests
         del request.headers['Host']
 
-        ### DEV #####
-        print 'Outgoing Request URLs'
-        for destination_url in destination_urls:
-            print '\t', destination_url
-        print 'Outgoing Request Headers'
-        for key in request.headers:
-            print '\t', key, request.headers[key]
-        #####
-
         requests = (grequests.request(request.method,
                                       destination_url,
                                       data=request.body,
