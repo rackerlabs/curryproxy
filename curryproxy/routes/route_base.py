@@ -7,9 +7,6 @@ class RouteBase(object):
     def match(self, request_url):
         url_pattern = self._find_pattern_for_request(request_url)
         if url_pattern is not None:
-            ##### DEV #####
-            print 'Matched route:', url_pattern
-            #####
             return True
 
         return False
