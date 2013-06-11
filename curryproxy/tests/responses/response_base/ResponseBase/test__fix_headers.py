@@ -8,7 +8,7 @@ from curryproxy.responses.response_base import ResponseBase
 
 class Test_Fix_Headers(TestCase):
     def test__fix_content_encoding(self):
-        response = ResponseBase()
+        response = ResponseBase(None)
         response._fix_content_encoding = Mock()
         response._request = Request.blank('http://www.example.com')
         response._response = Response()
@@ -18,7 +18,7 @@ class Test_Fix_Headers(TestCase):
         response._fix_content_encoding.assert_called_with()
 
     def test__fix_date(self):
-        response = ResponseBase()
+        response = ResponseBase(None)
         response._fix_date = Mock()
         response._request = Request.blank('http://www.example.com')
         response._response = Response()

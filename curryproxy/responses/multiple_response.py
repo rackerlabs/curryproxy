@@ -1,15 +1,12 @@
 import json
 
-from webob import Response
-
 from curryproxy.responses.response_base import ResponseBase
 
 
 class MultipleResponse(ResponseBase):
     def __init__(self, request, responses):
-        self._request = request
+        super(MultipleResponse, self).__init__(request)
         self._responses = responses
-        self._response = Response()
 
         json_returned = all('Content-Type' in response.headers
                             and 'application/json'
@@ -57,19 +54,4 @@ class MultipleResponse(ResponseBase):
 
         self._response.content_type = 'application/json'
 
-        results = []
-        for response in self._responses:
-            result = {}
-            result['url'] = response.url
-            result['status'] = '{0} {1}'.format(response.status_code,
-                                                response.reason)
-            result['headers'] = dict(response.headers)
-            result['body'] = response.content
-
-            results.append(result)
-
-        self._response.body = json.dumps(results)
-
-    @property
-    def response(self):
-        return self._response
+        self._aggregate_response_bodies()
