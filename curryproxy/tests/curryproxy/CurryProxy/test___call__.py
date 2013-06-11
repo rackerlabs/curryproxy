@@ -11,7 +11,8 @@ class Test__Call__(TestCase):
     def setUp(self):
         super(Test__Call__, self).setUp()
 
-        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json')
+        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json',
+                                'curryproxy/tests/etc/logging.console.conf')
 
     def test_matched_route(self):
         # Setup route
