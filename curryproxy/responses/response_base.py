@@ -1,7 +1,13 @@
 from datetime import datetime
 
+from webob import Response
+
 
 class ResponseBase(object):
+    def __init__(self, request):
+        self._request = request
+        self._response = Response()
+
     def _fix_headers(self):
         self._fix_content_encoding()
         self._fix_date()
@@ -23,3 +29,7 @@ class ResponseBase(object):
 
     def _fix_date(self):
         self._response.date = datetime.utcnow()
+
+    @property
+    def response(self):
+        return self._response
