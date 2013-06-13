@@ -2,6 +2,8 @@ import re
 
 import grequests
 
+from curryproxy.responses import ErrorResponse
+from curryproxy.responses import MetadataResponse
 from curryproxy.responses import MultipleResponse
 from curryproxy.routes.route_base import RouteBase
 from curryproxy.responses import SingleResponse
@@ -11,9 +13,10 @@ ENDPOINTS_WILDCARD = '{Endpoint_IDs}'
 
 
 class EndpointsRoute(RouteBase):
-    def __init__(self, url_patterns, endpoints):
+    def __init__(self, url_patterns, endpoints, priority_errors):
         self._url_patterns = url_patterns
         self._endpoints = endpoints
+        self._priority_errors = priority_errors
 
     def _find_pattern_for_request(self, request_url):
         wildcard_escaped = re.escape(ENDPOINTS_WILDCARD)
@@ -48,14 +51,21 @@ class EndpointsRoute(RouteBase):
                     for destination_url in destination_urls)
         requests_responses = grequests.map(requests, stream=True)
 
-        if len(requests_responses) == 1:
-            single_response = SingleResponse(original_request,
-                                             requests_responses[0])
-            return single_response.response
+        response = None
+        if ('Proxy-Aggregator-Body' in original_request.headers
+                and original_request.headers['Proxy-Aggregator-Body'].lower()
+                == 'response-metadata'):
+            response = MetadataResponse(original_request, requests_responses)
+        elif len(requests_responses) == 1:
+            response = SingleResponse(original_request, requests_responses[0])
+        elif any(r.status_code >= 400 for r in requests_responses):
+            response = ErrorResponse(original_request,
+                                     requests_responses,
+                                     self._priority_errors)
         else:
-            multiple_response = MultipleResponse(original_request,
-                                                 requests_responses)
-            return multiple_response.response
+            response = MultipleResponse(original_request, requests_responses)
+
+        return response.response
 
     def _create_forwarded_urls(self, request_url):
         # Extract endpoints from request

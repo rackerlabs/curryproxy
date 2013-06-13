@@ -11,7 +11,7 @@ class Test_Fix_Date(TestCase):
     def test__fix_date(self):
         utc_now = datetime.utcnow()
 
-        response = ResponseBase()
+        response = ResponseBase(None)
         response._response = Response()
         response._response.date = utc_now
 

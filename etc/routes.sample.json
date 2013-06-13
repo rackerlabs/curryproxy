@@ -19,6 +19,7 @@
 				"id": "2",
 				"url": "https://2.api.example.com/v2.0/"
 			}
-		]
+		],
+		"priority_errors": []
 	}
 ]
