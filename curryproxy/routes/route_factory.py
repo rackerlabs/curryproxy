@@ -30,7 +30,11 @@ def parse_dict(route_config):
         for endpoint in route_config['endpoints']:
             endpoints[endpoint['id']] = endpoint['url']
 
-        return EndpointsRoute(url_patterns, endpoints)
+        priority_errors = []
+        if 'priority_errors' in route_config:
+            priority_errors = route_config['priority_errors']
+
+        return EndpointsRoute(url_patterns, endpoints, priority_errors)
 
     raise ConfigError('The route "{0}" must contain either "forwarding_url" '
                       'or "endpoints"'.format(url_patterns))

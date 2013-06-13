@@ -42,32 +42,6 @@ class Test_Aggregate_Responses(TestCase):
 
         return response
 
-    def test_body(self):
-        response1 = self.setUpResponse(None, self.body_json)
-        response1.reason = 'OK'
-        response1.url = 'http://1.example.com'
-        response2 = self.setUpResponse({'Content-Type': 'text/html'},
-                                       self.body_html, status_code=404)
-        response2.reason = 'Not Found Custom'
-        response2.url = 'http://2.example.com'
-
-        multiple_response = self.setUpMultipleResponse([response1, response2])
-
-        multiple_response._aggregate_responses()
-
-        response = multiple_response.response.json
-        self.assertEqual(2, len(response))
-
-        self.assertEqual(response1.url, response[0]['url'])
-        self.assertEqual('200 OK', response[0]['status'])
-        self.assertEqual(response1.headers, response[0]['headers'])
-        self.assertEqual(self.body_json, response[0]['body'])
-
-        self.assertEqual(response2.url, response[1]['url'])
-        self.assertEqual('404 Not Found Custom', response[1]['status'])
-        self.assertEqual(response2.headers, response[1]['headers'])
-        self.assertEqual(self.body_html, response[1]['body'])
-
     def test_content_type(self):
         headers = self.headers.copy()
         headers['Content-Type'] = 'text/html'

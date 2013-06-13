@@ -1,7 +1,28 @@
 from datetime import datetime
+import json
+
+from webob import Response
 
 
 class ResponseBase(object):
+    def __init__(self, request):
+        self._request = request
+        self._response = Response()
+
+    def _aggregate_response_bodies(self):
+        results = []
+        for response in self._responses:
+            result = {}
+            result['url'] = response.url
+            result['status'] = '{0} {1}'.format(response.status_code,
+                                                response.reason)
+            result['headers'] = dict(response.headers)
+            result['body'] = response.content
+
+            results.append(result)
+
+        self._response.body = json.dumps(results)
+
     def _fix_headers(self):
         self._fix_content_encoding()
         self._fix_date()
@@ -23,3 +44,7 @@ class ResponseBase(object):
 
     def _fix_date(self):
         self._response.date = datetime.utcnow()
+
+    @property
+    def response(self):
+        return self._response
