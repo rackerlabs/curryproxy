@@ -12,9 +12,9 @@ from curryproxy.responses import MetadataResponse
 from curryproxy.tests.utils import RequestsResponseMock
 
 
-class TestIssue_Request(TestCase):
+class Test__Call__(TestCase):
     def setUp(self):
-        super(TestIssue_Request, self).setUp()
+        super(Test__Call__, self).setUp()
 
         self.patcher = patch.object(grequests, 'map')
         self.grequests_map = self.patcher.start()
@@ -44,7 +44,7 @@ class TestIssue_Request(TestCase):
                                               new=mock_response)
         route_patcher_response.start()
 
-        response = self.endpoints_route.issue_request(request)
+        response = self.endpoints_route(request)
         self.assertEqual(mock_response, response)
 
         route_patcher___init__.stop()
@@ -68,7 +68,7 @@ class TestIssue_Request(TestCase):
                                               new=mock_response)
         route_patcher_response.start()
 
-        response = self.endpoints_route.issue_request(request)
+        response = self.endpoints_route(request)
 
         self.assertEqual(mock_response, response)
 
@@ -93,7 +93,7 @@ class TestIssue_Request(TestCase):
                                               new=mock_response)
         route_patcher_response.start()
 
-        self.endpoints_route.issue_request(request)
+        self.endpoints_route(request)
 
         args, kwargs = error_response.call_args
         self.assertEqual(self.endpoints_route._priority_errors, args[2])
@@ -122,7 +122,7 @@ class TestIssue_Request(TestCase):
                                               new=mock_response)
         route_patcher_response.start()
 
-        self.endpoints_route.issue_request(request)
+        self.endpoints_route(request)
 
         self.assertTrue(metadata_response.called)
 
@@ -133,11 +133,11 @@ class TestIssue_Request(TestCase):
         request = Request.blank('http://example.com/test/path')
 
         with ExpectedException(TypeError):
-            self.endpoint_route.issue_request(request)
+            self.endpoint_route(request)
 
         self.assertTrue({'stream': True} in self.grequests_map.call_args)
 
     def tearDown(self):
-        super(TestIssue_Request, self).tearDown()
+        super(Test__Call__, self).tearDown()
 
         self.patcher.stop()

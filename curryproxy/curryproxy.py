@@ -46,7 +46,7 @@ class CurryProxy(object):
 
         try:
             matched_route = self._match_route(request.url)
-            response = matched_route.issue_request(request)
+            response = matched_route(request)
         except RequestError as re:
             response = Response()
             response.status = 403

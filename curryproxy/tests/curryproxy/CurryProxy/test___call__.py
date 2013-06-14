@@ -1,8 +1,9 @@
-from mock import Mock
+from mock import patch
 from webob import Response
 from testtools import TestCase
 
 from curryproxy.curryproxy import CurryProxy
+from curryproxy.routes import ForwardingRoute
 from curryproxy.routes import route_factory
 from curryproxy.tests.utils import StartResponseMock
 
@@ -25,7 +26,6 @@ class Test__Call__(TestCase):
         mock_response = Response()
         mock_response.status = 200
         mock_response.body = 'Response Body'
-        self.route.issue_request = Mock(return_value=mock_response)
 
         # Create request
         environ = {'wsgi.url_scheme': 'https',
@@ -35,12 +35,15 @@ class Test__Call__(TestCase):
         start_response = StartResponseMock()
 
         # Issue request
-        response = self.curry.__call__(environ, start_response)
+        with patch.object(ForwardingRoute,
+                          '__call__',
+                          return_value=mock_response):
+            response = self.curry.__call__(environ, start_response)
 
-        # Assert
-        self.assertEqual(mock_response.status, start_response.status)
-        self.assertEqual(mock_response.headerlist, start_response.headers)
-        self.assertEqual(mock_response.body, response)
+            # Assert
+            self.assertEqual(mock_response.status, start_response.status)
+            self.assertEqual(mock_response.headerlist, start_response.headers)
+            self.assertEqual(mock_response.body, response)
 
     def test_unmatched_route(self):
         environ = {'wsgi.url_scheme': 'https',
