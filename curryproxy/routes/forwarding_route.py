@@ -13,16 +13,7 @@ class ForwardingRoute(RouteBase):
         self._url_patterns = url_patterns
         self._forwarding_url = forwarding_url
 
-    def _find_pattern_for_request(self, request_url):
-        for url_pattern in self._url_patterns:
-            url_pattern_escaped = re.escape(url_pattern)
-
-            if re.match(url_pattern_escaped, request_url, re.IGNORECASE):
-                return url_pattern
-
-        return None
-
-    def issue_request(self, request):
+    def __call__(self, request):
         original_request = request.copy()
 
         destination_url = self._create_forwarded_url(request.url)
@@ -43,6 +34,12 @@ class ForwardingRoute(RouteBase):
 
     def _create_forwarded_url(self, request_url):
         url_pattern = self._find_pattern_for_request(request_url)
+        if not url_pattern:
+            raise RequestError('Requested URL "{0}" did not match the '
+                               'forwarding route "{1}"'
+                               .format(request_url,
+                                       ', '.join(self._url_patterns)))
+
         url_pattern_escaped = re.escape(url_pattern)
 
         forwarded_url, count = re.subn(url_pattern_escaped,
@@ -51,8 +48,13 @@ class ForwardingRoute(RouteBase):
                                        1,
                                        re.IGNORECASE)
 
-        if count != 1:
-            raise RequestError('Provided request_url did not match the route '
-                               '{0}'.format(self._url_pattern))
-
         return forwarded_url
+
+    def _find_pattern_for_request(self, request_url):
+        for url_pattern in self._url_patterns:
+            url_pattern_escaped = re.escape(url_pattern)
+
+            if re.match(url_pattern_escaped, request_url, re.IGNORECASE):
+                return url_pattern
+
+        return None

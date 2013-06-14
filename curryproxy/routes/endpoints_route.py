@@ -18,21 +18,7 @@ class EndpointsRoute(RouteBase):
         self._endpoints = endpoints
         self._priority_errors = priority_errors
 
-    def _find_pattern_for_request(self, request_url):
-        wildcard_escaped = re.escape(ENDPOINTS_WILDCARD)
-
-        for url_pattern in self._url_patterns:
-            pattern_escaped = re.escape(url_pattern)
-            pattern_escaped = pattern_escaped.replace(wildcard_escaped,
-                                                      '.*',
-                                                      1)
-
-            if re.match(pattern_escaped, request_url, re.IGNORECASE):
-                return url_pattern
-
-        return None
-
-    def issue_request(self, request):
+    def __call__(self, request):
         original_request = request.copy()
 
         destination_urls = self._create_forwarded_urls(request.url)
@@ -88,3 +74,17 @@ class EndpointsRoute(RouteBase):
             endpoint_urls.append(url)
 
         return endpoint_urls
+
+    def _find_pattern_for_request(self, request_url):
+        wildcard_escaped = re.escape(ENDPOINTS_WILDCARD)
+
+        for url_pattern in self._url_patterns:
+            pattern_escaped = re.escape(url_pattern)
+            pattern_escaped = pattern_escaped.replace(wildcard_escaped,
+                                                      '.*',
+                                                      1)
+
+            if re.match(pattern_escaped, request_url, re.IGNORECASE):
+                return url_pattern
+
+        return None
