@@ -1,10 +1,14 @@
 from curryproxy.errors import ConfigError
 from curryproxy.routes import EndpointsRoute
 from curryproxy.routes import ForwardingRoute
+from curryproxy.routes import StatusRoute
 
 
 def parse_dict(route_config):
     url_patterns = None
+
+    if 'status' in route_config:
+        return StatusRoute(route_config['status'])
 
     if 'route' not in route_config:
         raise ConfigError('Each route must contain "route"')
