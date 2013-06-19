@@ -20,6 +20,13 @@ class Test_Find_Pattern_For_Request(TestCase):
 
         self.assertEquals(self.url_patterns[0], url_pattern)
 
+    def test_pattern_not_found(self):
+        request_url = 'http://example.com/'
+
+        url_pattern = self.route._find_pattern_for_request(request_url)
+
+        self.assertIsNone(url_pattern)
+
     def test_whitespace_encoded_leading(self):
         request_url = 'https://example.com/%20one,%20two/path'
 
