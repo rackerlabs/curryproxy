@@ -1,4 +1,5 @@
 import re
+import urllib
 
 import grequests
 
@@ -70,7 +71,8 @@ class EndpointsRoute(RouteBase):
         # Create final URLs to be forwarded
         endpoint_urls = []
         for endpoint_id in endpoint_ids.group("endpoint_ids").split(','):
-            url = self._endpoints[endpoint_id] + trailing_route
+            endpoint_id = urllib.unquote(endpoint_id)
+            url = self._endpoints[endpoint_id.strip()] + trailing_route
             endpoint_urls.append(url)
 
         return endpoint_urls
