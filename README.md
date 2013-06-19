@@ -21,6 +21,10 @@ Caveats
 - Only JSON responses can be aggregated
 - TODO: Determine which responses are aggregated. Currently, only GET requests resulting in responses with `200` response codes and `Content-Type: application/json` headers are aggregated.
 
+Setup
+-----
+- https://github.com/racker/Curry/wiki/Setup
+
 <a id="roadmap"></a>Roadmap
 -------
 - OData support for server-side ordering and paging
