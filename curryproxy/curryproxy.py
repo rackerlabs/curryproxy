@@ -50,7 +50,7 @@ class CurryProxy(object):
         except RequestError as re:
             response = Response()
             response.status = 403
-            response.body = str(re)
+            response.body = json.dumps(str(re))
 
         start_response(response.status, response.headerlist)
         return response.body

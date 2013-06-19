@@ -1,6 +1,8 @@
+from testtools import ExpectedException
 from testtools import TestCase
 
 from curryproxy.routes import EndpointsRoute
+from curryproxy.errors import RequestError
 
 
 class Test_Create_Forwarded_Urls(TestCase):
@@ -30,6 +32,13 @@ class Test_Create_Forwarded_Urls(TestCase):
 
         self.assertTrue(self.endpoints['one'] + request_path in forwarded_urls)
         self.assertTrue(self.endpoints['two'] + request_path in forwarded_urls)
+
+    def test_invalid_endpoint(self):
+        request_path = 'path'
+        request_url = 'https://example.com/1/' + request_path
+
+        with ExpectedException(RequestError):
+            self.route._create_forwarded_urls(request_url)
 
     def test_single_endpoint(self):
         request_path = 'path'

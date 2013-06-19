@@ -7,6 +7,7 @@ from curryproxy.errors import ConfigError
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
 from curryproxy.responses import MultipleResponse
+from curryproxy.errors import RequestError
 from curryproxy.routes.route_base import RouteBase
 from curryproxy.responses import SingleResponse
 
@@ -93,6 +94,11 @@ class EndpointsRoute(RouteBase):
             if all_endpoints or endpoint_id in endpoint_ids:
                 url = self._endpoints[endpoint_id] + trailing_route
                 endpoint_urls.append(url)
+
+        if len(endpoint_urls) == 0:
+            raise RequestError('The incoming request did not specify a valid '
+                               'endpoint identifier for matched route: {0}'
+                               .format(url_pattern))
 
         return endpoint_urls
 
