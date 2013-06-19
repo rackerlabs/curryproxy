@@ -3,6 +3,7 @@ import urllib
 
 import grequests
 
+from curryproxy.errors import ConfigError
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
 from curryproxy.responses import MultipleResponse
@@ -16,8 +17,15 @@ ENDPOINTS_WILDCARD = '{Endpoint_IDs}'
 class EndpointsRoute(RouteBase):
     def __init__(self, url_patterns, endpoints, priority_errors):
         self._url_patterns = url_patterns
-        self._endpoints = endpoints
+        self._endpoints = {}
         self._priority_errors = priority_errors
+
+        for endpoint_id in endpoints:
+            lowered_endpoint_id = endpoint_id.lower()
+            if lowered_endpoint_id in self._endpoints:
+                raise ConfigError('Duplicate endpoint IDs for the same route '
+                                  'are not permitted.')
+            self._endpoints[lowered_endpoint_id] = endpoints[endpoint_id]
 
     def __call__(self, request):
         original_request = request.copy()
@@ -72,7 +80,7 @@ class EndpointsRoute(RouteBase):
         endpoint_urls = []
         for endpoint_id in endpoint_ids.group("endpoint_ids").split(','):
             endpoint_id = urllib.unquote(endpoint_id)
-            url = self._endpoints[endpoint_id.strip()] + trailing_route
+            url = self._endpoints[endpoint_id.strip().lower()] + trailing_route
             endpoint_urls.append(url)
 
         return endpoint_urls
