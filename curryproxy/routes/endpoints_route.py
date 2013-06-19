@@ -20,6 +20,9 @@ class EndpointsRoute(RouteBase):
         self._endpoints = {}
         self._priority_errors = priority_errors
 
+        if '*' in endpoints:
+            raise ConfigError('Asterisks are not permitted as endpoint IDs.')
+
         for endpoint_id in endpoints:
             lowered_endpoint_id = endpoint_id.lower()
             if lowered_endpoint_id in self._endpoints:
