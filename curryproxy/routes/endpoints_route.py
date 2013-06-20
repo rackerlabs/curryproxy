@@ -1,10 +1,13 @@
 import re
+import urllib
 
 import grequests
 
+from curryproxy.errors import ConfigError
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
 from curryproxy.responses import MultipleResponse
+from curryproxy.errors import RequestError
 from curryproxy.routes.route_base import RouteBase
 from curryproxy.responses import SingleResponse
 
@@ -15,8 +18,18 @@ ENDPOINTS_WILDCARD = '{Endpoint_IDs}'
 class EndpointsRoute(RouteBase):
     def __init__(self, url_patterns, endpoints, priority_errors):
         self._url_patterns = url_patterns
-        self._endpoints = endpoints
+        self._endpoints = {}
         self._priority_errors = priority_errors
+
+        if '*' in endpoints:
+            raise ConfigError('Asterisks are not permitted as endpoint IDs.')
+
+        for endpoint_id in endpoints:
+            lowered_endpoint_id = endpoint_id.lower()
+            if lowered_endpoint_id in self._endpoints:
+                raise ConfigError('Duplicate endpoint IDs for the same route '
+                                  'are not permitted.')
+            self._endpoints[lowered_endpoint_id] = endpoints[endpoint_id]
 
     def __call__(self, request):
         original_request = request.copy()
@@ -60,18 +73,32 @@ class EndpointsRoute(RouteBase):
         match_expression = re.escape(url_pattern_parts[0]) + \
             "(?P<endpoint_ids>.*)" + \
             re.escape(url_pattern_parts[1])
-        endpoint_ids = re.match(match_expression, request_url)
+        endpoint_ids_group = re.match(match_expression,
+                                      request_url).group("endpoint_ids")
+        endpoint_ids = endpoint_ids_group.split(',')
+        endpoint_ids = [urllib.unquote(e_id) for e_id in endpoint_ids]
+        endpoint_ids = [e_id.strip().lower() for e_id in endpoint_ids]
 
-        # Extract trailing portion of URL
+        # Extract trailing portion of request URL
         trailing_route = request_url[len(url_pattern_parts[0]
-                                         + endpoint_ids.group("endpoint_ids")
+                                         + endpoint_ids_group
                                          + url_pattern_parts[1]):]
 
         # Create final URLs to be forwarded
         endpoint_urls = []
-        for endpoint_id in endpoint_ids.group("endpoint_ids").split(','):
-            url = self._endpoints[endpoint_id] + trailing_route
-            endpoint_urls.append(url)
+        all_endpoints = False
+        if '*' in endpoint_ids:
+            all_endpoints = True
+
+        for endpoint_id in self._endpoints:
+            if all_endpoints or endpoint_id in endpoint_ids:
+                url = self._endpoints[endpoint_id] + trailing_route
+                endpoint_urls.append(url)
+
+        if len(endpoint_urls) == 0:
+            raise RequestError('The incoming request did not specify a valid '
+                               'endpoint identifier for matched route: {0}'
+                               .format(url_pattern))
 
         return endpoint_urls
 
