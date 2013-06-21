@@ -6,18 +6,12 @@ from webob import Request
 from webob import Response
 
 from errors import ConfigError
+from helpers import exception_wrapper
+from helpers import profile_wrapper
 from errors import RequestError
 from routes import route_factory
 
-
-def exception_wrapper(function):
-    def wrapper(*args, **kwargs):
-        try:
-            return function(*args, **kwargs)
-        except Exception as e:
-            logging.exception(e)
-
-    return wrapper
+from helpers import ENVIRON_REQUEST_UUID_KEY
 
 
 class CurryProxy(object):
@@ -38,11 +32,14 @@ class CurryProxy(object):
             self._routes.append(route_factory.parse_dict(route_config))
 
     @exception_wrapper
+    @profile_wrapper
     def __call__(self, environ, start_response):
         request = Request(environ)
         response = None
 
-        logging.info('Received request: {0}'.format(request.url))
+        logging.info('Received request: %s',
+                     request.url,
+                     extra={'request_uuid': environ[ENVIRON_REQUEST_UUID_KEY]})
 
         try:
             matched_route = self._match_route(request.url)
