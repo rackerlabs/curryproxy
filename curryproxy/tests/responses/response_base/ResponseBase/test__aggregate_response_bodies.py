@@ -62,12 +62,12 @@ class Test_Aggregate_Response_Bodies(TestCase):
                                              body_2)
 
         response_base = ResponseBase(None)
-        response_base._responses = [response_html, response_json]
+        response_base._responses = [response_html, response_json, None]
 
         response_base._aggregate_response_bodies()
 
         response = response_base.response.json
-        self.assertEqual(2, len(response))
+        self.assertEqual(3, len(response))
 
         self.assertEqual(url_1, response[0]['url'])
         self.assertEqual('{0} {1}'.format(status_code_1, reason_1),
@@ -80,3 +80,5 @@ class Test_Aggregate_Response_Bodies(TestCase):
                          response[1]['status'])
         self.assertEqual(headers_2, response[1]['headers'])
         self.assertEqual(body_2, response[1]['body'])
+
+        self.assertIsNone(response[2])
