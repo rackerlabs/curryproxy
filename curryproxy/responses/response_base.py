@@ -12,6 +12,10 @@ class ResponseBase(object):
     def _aggregate_response_bodies(self):
         results = []
         for response in self._responses:
+            if response is None:
+                results.append(None)
+                continue
+
             result = {}
             result['url'] = response.url
             result['status'] = '{0} {1}'.format(response.status_code,

@@ -1,4 +1,6 @@
+import json
 import time
+import uuid
 
 from testtools import ExpectedException
 import grequests
@@ -10,6 +12,8 @@ from curryproxy.routes import EndpointsRoute
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
 from curryproxy.tests.utils import RequestsResponseMock
+
+from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 
 
 class Test__Call__(TestCase):
@@ -136,6 +140,52 @@ class Test__Call__(TestCase):
             self.endpoint_route(request)
 
         self.assertTrue({'stream': True} in self.grequests_map.call_args)
+
+    def test_timeout_body(self):
+        request = Request.blank('http://example.com/1,2/path')
+        request.environ[ENVIRON_REQUEST_UUID_KEY] = uuid.uuid4()
+
+        headers = {'Content-Type': 'application/json'}
+        response1 = None
+        response2 = RequestsResponseMock(status_code=200,
+                                         reason='OK',
+                                         headers=headers)
+        self.grequests_map.return_value = [response1, response2]
+
+        response = self.endpoints_route(request)
+
+        response_object = json.loads(response.body)
+        self.assertTrue(None in response_object)
+        response_200s = [i for i in response_object
+                         if i is not None and i['status'] == '200 OK']
+        self.assertTrue(len(response_200s) == 1)
+
+    def test_timeout_logged(self):
+        request = Request.blank('http://example.com/1,2/path')
+        request.environ[ENVIRON_REQUEST_UUID_KEY] = uuid.uuid4()
+
+        headers = {'Content-Type': 'application/json'}
+        response1 = None
+        response2 = RequestsResponseMock(status_code=200, headers=headers)
+        self.grequests_map.return_value = [response1, response2]
+
+        with patch('logging.error') as le:
+            self.endpoints_route(request)
+
+            self.assertTrue(le.called)
+
+    def test_timeout_status_code(self):
+        request = Request.blank('http://example.com/1,2/path')
+        request.environ[ENVIRON_REQUEST_UUID_KEY] = uuid.uuid4()
+
+        headers = {'Content-Type': 'application/json'}
+        response1 = None
+        response2 = RequestsResponseMock(status_code=200, headers=headers)
+        self.grequests_map.return_value = [response1, response2]
+
+        response = self.endpoints_route(request)
+
+        self.assertEqual(504, response.status_code)
 
     def tearDown(self):
         super(Test__Call__, self).tearDown()
