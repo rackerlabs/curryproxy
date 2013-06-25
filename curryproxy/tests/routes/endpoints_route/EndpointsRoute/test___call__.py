@@ -12,6 +12,7 @@ from curryproxy.routes import EndpointsRoute
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
 from curryproxy.tests.utils import RequestsResponseMock
+from curryproxy.responses import SingleResponse
 
 from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 
@@ -29,6 +30,33 @@ class Test__Call__(TestCase):
                      '2': 'http://2.example.com/'}
         self.endpoint_route = EndpointsRoute(url_patterns, endpoint, [])
         self.endpoints_route = EndpointsRoute(url_patterns, endpoints, [])
+
+    def test_destination_urls(self):
+        request = Request.blank('http://example.com/1,2/path')
+
+        headers = {'Content-Type': 'application/json'}
+        response = RequestsResponseMock(status_code=200, headers=headers)
+        self.grequests_map.return_value = [response]
+
+        response___init__ = patch.object(SingleResponse,
+                                         '__init__',
+                                         return_value=None)
+        response___init__.start()
+
+        response_response = patch.object(SingleResponse, 'response')
+        response_response.start()
+
+        response = self.endpoints_route(request)
+
+        """Since we're mocking grequests.map(), we need to manually iterate the
+            generator to achieve 100% code coverage"""
+        destination_urls = list(self.grequests_map.call_args[0][0])
+        self.assertEqual(2, len(destination_urls))
+        for grequest_request in destination_urls:
+            self.assertTrue(grequest_request.url.endswith('/path'))
+
+        response_response.stop()
+        response___init__.stop()
 
     def test_error_response_400(self):
         request = Request.blank('http://example.com/1,2/path')
@@ -140,6 +168,31 @@ class Test__Call__(TestCase):
             self.endpoint_route(request)
 
         self.assertTrue({'stream': True} in self.grequests_map.call_args)
+
+    def test_single_endpoint(self):
+        request = Request.blank('http://example.com/1/path')
+
+        headers = {'Content-Type': 'application/json'}
+        response = RequestsResponseMock(status_code=200, headers=headers)
+        self.grequests_map.return_value = [response]
+
+        response___init__ = patch.object(SingleResponse,
+                                         '__init__',
+                                         return_value=None)
+        response___init__.start()
+
+        mock_response = time.time()
+        response_response = patch.object(SingleResponse,
+                                         'response',
+                                         new=mock_response)
+        response_response.start()
+
+        response = self.endpoints_route(request)
+
+        self.assertEqual(mock_response, response)
+
+        response_response.stop()
+        response___init__.stop()
 
     def test_timeout_body(self):
         request = Request.blank('http://example.com/1,2/path')

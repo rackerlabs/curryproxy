@@ -1,9 +1,10 @@
 from datetime import datetime
-import time
 
+from mock import patch
 from webob import Response
 from testtools import TestCase
 
+from curryproxy.responses import response_base
 from curryproxy.responses.response_base import ResponseBase
 
 
@@ -15,15 +16,23 @@ class Test_Fix_Date(TestCase):
         response._response = Response()
         response._response.date = utc_now
 
-        # Ensure a second has passed before fixing the Date header
-        time.sleep(1)
+        mock_datetime = datetime(2012, 7, 31)
+        datetime_patcher = patch.object(response_base,
+                                        'datetime')
+        mocked_datetime = datetime_patcher.start()
+        mocked_datetime.utcnow.return_value = mock_datetime
+        self.addCleanup(datetime_patcher.stop)
 
         response._fix_date()
 
-        """
-        Unfortunately, Python cannot compare offset-naive and offset-aware
-        datetimes directly. webob.Response.date is only accurate to the second,
-        so just make sure we have a new value there.
-        """
+        # Python cannot compare offset-naive (datetime.utcnow()) and
+        # offset-aware (webob.Response.date) datetimes directly, so make a
+        # naive comparison here.
 
-        self.assertNotEquals(utc_now.second, response._response.date.second)
+        self.assertNotEqual(utc_now.year, response._response.date.year)
+        self.assertNotEqual(utc_now.month, response._response.date.month)
+        self.assertNotEqual(utc_now.day, response._response.date.day)
+
+        self.assertEqual(mock_datetime.year, response._response.date.year)
+        self.assertEqual(mock_datetime.month, response._response.date.month)
+        self.assertEqual(mock_datetime.day, response._response.date.day)

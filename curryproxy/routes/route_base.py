@@ -29,15 +29,15 @@ class RouteBase(object):
 
     @abc.abstractmethod
     def _find_pattern_for_request(self, request_url):
-        """Determines if the route matches the incoming request
+        """Finds the route's URL pattern to match the incoming request
 
         Compare the incoming request_url to the url_patterns this route serves
-        to determine whether or not the route matches the incoming request.
+        to determine which URL pattern matches the request.
 
         Args:
             request_url: URL of the incoming request
         Returns:
-            True if this route can server the incoming request. Otherwise,
-            false.
+            URL pattern string matching the incoming request if one exists.
+                Otherwise, return None.
         """
         raise NotImplementedError
