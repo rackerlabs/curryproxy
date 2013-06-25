@@ -87,3 +87,10 @@ class TestParse_Dict(TestCase):
     def test_route_missing(self):
         with ExpectedException(ConfigError):
             route_factory.parse_dict({'endpoints': self.endpoints})
+
+    def test_status(self):
+        route_dict = {'status': ['http://curryproxy.example.com/status']}
+
+        route = route_factory.parse_dict(route_dict)
+
+        self.assertEqual(route_dict['status'], route._url_patterns)
