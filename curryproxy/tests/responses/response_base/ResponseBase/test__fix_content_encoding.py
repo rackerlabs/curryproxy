@@ -8,7 +8,7 @@ from curryproxy.responses.response_base import ResponseBase
 class Test_Fix_Content_Encoding(TestCase):
     def setUp(self):
         super(Test_Fix_Content_Encoding, self).setUp()
-        
+
         self.response_data = '{"test": "json"}'
 
         response = Response()
@@ -18,7 +18,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
     def test_request_gzip_response_gzip(self):
         response = ResponseBase(None)
-        
+
         response._request = Mock()
         response._request.accept_encoding = 'gzip'
         response._response = Response()
@@ -31,7 +31,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
     def test_request_gzip_response_gzip_empty(self):
         response = ResponseBase(None)
-        
+
         response._request = Mock()
         response._request.accept_encoding = 'gzip'
         response._response = Response()
@@ -44,7 +44,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
     def test_request_gzip_response_gzip_none(self):
         response = ResponseBase(None)
-        
+
         response._request = Mock()
         response._request.accept_encoding = 'gzip'
         response._response = Response()
@@ -57,7 +57,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
     def test_request_gzip_empty_response_gzip(self):
         response = ResponseBase(None)
-        
+
         response._request = Mock()
         response._request.accept_encoding = ''
         response._response = Response()
@@ -70,7 +70,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
     def test_request_gzip_empty_response_gzip_empty(self):
         response = ResponseBase(None)
-        
+
         response._request = Mock()
         response._request.accept_encoding = ''
         response._response = Response()
@@ -83,7 +83,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
     def test_request_gzip_empty_response_gzip_none(self):
         response = ResponseBase(None)
-        
+
         response._request = Mock()
         response._request.accept_encoding = ''
         response._response = Response()
@@ -96,7 +96,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
     def test_request_gzip_none_response_gzip(self):
         response = ResponseBase(None)
-        
+
         response._request = Mock()
         response._request.accept_encoding = None
         response._response = Response()
@@ -109,7 +109,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
     def test_request_gzip_none_response_gzip_empty(self):
         response = ResponseBase(None)
-        
+
         response._request = Mock()
         response._request.accept_encoding = None
         response._response = Response()
@@ -122,7 +122,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
     def test_request_gzip_none_response_gzip_none(self):
         response = ResponseBase(None)
-        
+
         response._request = Mock()
         response._request.accept_encoding = None
         response._response = Response()
