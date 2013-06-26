@@ -35,19 +35,19 @@ class EndpointsRoute(RouteBase):
             self._endpoints[lowered_endpoint_id] = endpoints[endpoint_id]
 
     def __call__(self, request):
-        original_request = request.copy()
+        requests_request = request.copy()
 
-        destination_urls = self._create_forwarded_urls(request.url)
+        destination_urls = self._create_forwarded_urls(requests_request.url)
 
         # Use gzip even if the original requestor didn't support it
-        request.headers['Accept-Encoding'] = 'gzip,identity'
+        requests_request.headers['Accept-Encoding'] = 'gzip,identity'
         # Host header is automatically added for each request by grequests
-        del request.headers['Host']
+        del requests_request.headers['Host']
 
-        requests = (grequests.request(request.method,
+        requests = (grequests.request(requests_request.method,
                                       destination_url,
-                                      data=request.body,
-                                      headers=request.headers,
+                                      data=requests_request.body,
+                                      headers=requests_request.headers,
                                       allow_redirects=False,
                                       verify=True)
                     for destination_url in destination_urls)
@@ -55,24 +55,24 @@ class EndpointsRoute(RouteBase):
 
         response = None
         if None in requests_responses:
-            response = MetadataResponse(original_request, requests_responses)
+            response = MetadataResponse(request, requests_responses)
             response.response.status = 504
-            request_uuid = original_request.environ[ENVIRON_REQUEST_UUID_KEY]
+            request_uuid = request.environ[ENVIRON_REQUEST_UUID_KEY]
             logging.error('Unable to connect to one or more backend '
                           'endpoints: {0}'.format(', '.join(destination_urls)),
                           extra={'request_uuid': request_uuid})
-        elif ('Proxy-Aggregator-Body' in original_request.headers
-                and original_request.headers['Proxy-Aggregator-Body'].lower()
+        elif ('Proxy-Aggregator-Body' in request.headers
+                and request.headers['Proxy-Aggregator-Body'].lower()
                 == 'response-metadata'):
-            response = MetadataResponse(original_request, requests_responses)
+            response = MetadataResponse(request, requests_responses)
         elif len(requests_responses) == 1:
-            response = SingleResponse(original_request, requests_responses[0])
+            response = SingleResponse(request, requests_responses[0])
         elif any(r.status_code >= 400 for r in requests_responses):
-            response = ErrorResponse(original_request,
+            response = ErrorResponse(request,
                                      requests_responses,
                                      self._priority_errors)
         else:
-            response = MultipleResponse(original_request, requests_responses)
+            response = MultipleResponse(request, requests_responses)
 
         return response.response
 
