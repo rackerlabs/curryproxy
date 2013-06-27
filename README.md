@@ -1,6 +1,6 @@
 Curry [![Build Status](https://jenkins.drivesrvr-dev.com/job/curry-master/badge/icon)](https://jenkins.drivesrvr-dev.com/job/curry-master/)
 =====
-A fast and performant proxy for querying multiple instances of an API spead across globally distributed datacenters.
+A fast and performant proxy and aggregator for querying multiple instances of an API spread across globally distributed data centers.
 
 Initial Capabilities
 --------------------
