@@ -44,7 +44,7 @@ class MultipleResponse(ResponseBase):
         self._response.status = 502
         status_codes = [response.status_code for response in self._responses]
         status_codes = filter(lambda status: status < 500, status_codes)
-        
+
         if len(status_codes) > 1:
             max_status_code = max(status_codes)
             for status_code in [400, 300, 200, 100]:
