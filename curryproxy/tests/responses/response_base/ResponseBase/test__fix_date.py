@@ -29,10 +29,6 @@ class Test_Fix_Date(TestCase):
         # offset-aware (webob.Response.date) datetimes directly, so make a
         # naive comparison here.
 
-        self.assertNotEqual(utc_now.year, response._response.date.year)
-        self.assertNotEqual(utc_now.month, response._response.date.month)
-        self.assertNotEqual(utc_now.day, response._response.date.day)
-
         self.assertEqual(mock_datetime.year, response._response.date.year)
         self.assertEqual(mock_datetime.month, response._response.date.month)
         self.assertEqual(mock_datetime.day, response._response.date.day)
