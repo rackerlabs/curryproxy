@@ -1,7 +1,7 @@
 from mock import patch
 import testtools
 
-from curryproxy.curryproxy import CurryProxy
+from curryproxy import CurryProxy
 
 
 class Test___Init__(testtools.TestCase):
@@ -11,7 +11,7 @@ class Test___Init__(testtools.TestCase):
         self.patcher.start()
 
     def test_config_default(self):
-        patch_path = 'curryproxy.curryproxy.CurryProxy._process_routes'
+        patch_path = 'curryproxy.CurryProxy._process_routes'
         with patch(patch_path) as mocked_method:
             CurryProxy()
 

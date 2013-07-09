@@ -2,7 +2,7 @@ from mock import patch
 from webob import Response
 from testtools import TestCase
 
-from curryproxy.curryproxy import CurryProxy
+from curryproxy import CurryProxy
 from curryproxy.routes import ForwardingRoute
 from curryproxy.routes import route_factory
 from curryproxy.tests.utils import StartResponseMock

@@ -1,6 +1,6 @@
 from testtools import ExpectedException, TestCase
 
-from curryproxy.curryproxy import CurryProxy
+from curryproxy import CurryProxy
 from curryproxy.errors import RequestError
 from curryproxy.routes import route_factory
 

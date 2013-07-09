@@ -1,3 +1,9 @@
+"""The classes in this module have been lifted into the package namespace.
+
+Classes:
+    ForwardingRoute: Direct communication with a single endpoint.
+
+"""
 import re
 from urlparse import urlparse
 
@@ -9,7 +15,26 @@ from curryproxy.responses import SingleResponse
 
 
 class ForwardingRoute(RouteBase):
+    """Direct communication with a single endpoint.
+
+    A request matched to this route will be forwarded to the configured
+    endpoint with very little modification. The response received from the
+    destination endpoint will be directly forwarded back to the client.
+
+    """
     def __init__(self, url_patterns, forwarding_url):
+        """Initialize a new ForwardingRoute.
+
+        Args:
+            url_patterns: List of URL patterns which this route will handle.
+                Incoming requests must begin with one of these patterns for
+                this route to handle the request.
+            forwarding_url: Destination endpoint the request will be forwarded
+                to. Any portion of the incoming request URL following the
+                matched URL pattern will be appended to forwarding_url to
+                construct the final URL to request.
+
+        """
         self._url_patterns = url_patterns
         self._forwarding_url = forwarding_url
 
@@ -33,6 +58,25 @@ class ForwardingRoute(RouteBase):
         return single_response.response
 
     def _create_forwarded_url(self, request_url):
+        """Constructs a destination endpoint to request.
+
+        Finds the matching URL pattern for the request_url. Anything trailing
+        the pattern is appended to _forwarding_url to construct the final
+        destination URL.
+
+        Args:
+            request_url: Incoming request URL from the client to be matched to
+                a URL pattern and parsed to form the final destination URL.
+
+        Returns:
+            Final destination URL to which the incoming request should be
+            forwarded.
+
+        Raises:
+            RequestError: The incoming request did not match any URL patterns
+                for this route.
+
+        """
         url_pattern = self._find_pattern_for_request(request_url)
         if not url_pattern:
             raise RequestError('Requested URL "{0}" did not match the '
@@ -42,13 +86,13 @@ class ForwardingRoute(RouteBase):
 
         url_pattern_escaped = re.escape(url_pattern)
 
-        forwarded_url, count = re.subn(url_pattern_escaped,
-                                       self._forwarding_url,
-                                       request_url,
-                                       1,
-                                       re.IGNORECASE)
+        forwarded_url = re.subn(url_pattern_escaped,
+                                self._forwarding_url,
+                                request_url,
+                                1,
+                                re.IGNORECASE)
 
-        return forwarded_url
+        return forwarded_url[0]
 
     def _find_pattern_for_request(self, request_url):
         for url_pattern in self._url_patterns:

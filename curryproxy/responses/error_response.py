@@ -1,9 +1,48 @@
+"""The classes in this module have been lifted into the package namespace.
+
+Classes:
+    ErrorResponse: A response to the client if any destination endpoint
+      returned an error.
+
+"""
 from curryproxy.responses.response_base import ResponseBase
 from curryproxy.responses.single_response import SingleResponse
 
 
 class ErrorResponse(ResponseBase):
+    """A response to the client if any destination endpoint returned an error.
+
+    If any errors were encountered from destination endpoints, this class will
+    determine which error(s) should be returned back to the client.
+
+    """
     def __init__(self, request, responses, priority_errors):
+        """Initializes a new ErrorResponse.
+
+        If any priority errors have been defined for the route generating this
+        error they should be passed in here. If any response code matched a
+        priority error status code, only that response will be returned. If
+        multiple destination responses matched a priority error status code,
+        one will be chosen at random to be returned to the client.
+
+        If no priority error status codes were received but there was still a
+        client-level (400-class) status code, only the client-level error
+        response will be returned. If multiple destination responses returned
+        client-level error status codes, one will be chosen at random to be
+        returned to the client.
+
+        Finally, if neither of the two previous clauses apply, a HTTP 502 Bad
+        Gateway is returned and metadata about each response is aggregated into
+        the body as described in ResponseBase._aggregate_response_bodies().
+
+        Args:
+            request: webob.Request representation of the incoming request.
+            response: List of requests.Response representing responses from
+                destination endpoints.
+            priority_errors: List of error status codes to be immediately
+                returned if encountered.
+
+        """
         super(ErrorResponse, self).__init__(request)
         self._responses = responses
 
