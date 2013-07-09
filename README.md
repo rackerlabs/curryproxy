@@ -1,4 +1,4 @@
-Curry [![Build Status](https://jenkins.drivesrvr-dev.com/job/curry-master/badge/icon)](https://jenkins.drivesrvr-dev.com/job/curry-master/)
+Curry [![Build Status](https://travis-ci.org/rackerlabs/curryproxy.png)](https://travis-ci.org/rackerlabs/curryproxy)
 =====
 A fast and performant proxy and aggregator for querying multiple instances of an API spread across globally distributed data centers.
 
