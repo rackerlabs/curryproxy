@@ -16,19 +16,18 @@ import json
 import time
 import uuid
 
-from testtools import ExpectedException
 import grequests
 from mock import patch
-from webob import Request
+from testtools import ExpectedException
 from testtools import TestCase
-
-from curryproxy.routes import EndpointsRoute
-from curryproxy.responses import ErrorResponse
-from curryproxy.responses import MetadataResponse
-from curryproxy.tests.utils import RequestsResponseMock
-from curryproxy.responses import SingleResponse
+from webob import Request
 
 from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
+from curryproxy.responses import ErrorResponse
+from curryproxy.responses import MetadataResponse
+from curryproxy.responses import SingleResponse
+from curryproxy.routes import EndpointsRoute
+from curryproxy.tests.utils import RequestsResponseMock
 
 
 class Test__Call__(TestCase):

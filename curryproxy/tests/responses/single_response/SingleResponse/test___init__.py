@@ -16,11 +16,11 @@ import StringIO
 
 from mock import Mock
 from requests import Response
-from webob import Request
 from testtools import TestCase
+from webob import Request
 
-from curryproxy.responses.response_base import ResponseBase
 from curryproxy.responses import SingleResponse
+from curryproxy.responses.response_base import ResponseBase
 
 
 class Test__Init__(TestCase):

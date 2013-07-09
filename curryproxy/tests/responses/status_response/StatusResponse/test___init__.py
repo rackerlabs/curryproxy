@@ -12,13 +12,13 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from testtools import ExpectedException
 from mock import patch
-from webob import Request
+from testtools import ExpectedException
 from testtools import TestCase
+from webob import Request
 
-from curryproxy.responses.response_base import ResponseBase
 from curryproxy.responses import StatusResponse
+from curryproxy.responses.response_base import ResponseBase
 
 
 class Test__Init__(TestCase):

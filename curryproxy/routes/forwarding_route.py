@@ -24,8 +24,8 @@ from urlparse import urlparse
 import requests
 
 from curryproxy.errors import RequestError
-from curryproxy.routes.route_base import RouteBase
 from curryproxy.responses import SingleResponse
+from curryproxy.routes.route_base import RouteBase
 
 
 class ForwardingRoute(RouteBase):

@@ -15,8 +15,8 @@
 from testtools import ExpectedException
 from testtools import TestCase
 
-from curryproxy.routes import ForwardingRoute
 from curryproxy.errors import RequestError
+from curryproxy.routes import ForwardingRoute
 
 
 class Test_Create_Forwarded_Url(TestCase):

@@ -15,8 +15,8 @@
 from datetime import datetime
 
 from mock import patch
-from webob import Response
 from testtools import TestCase
+from webob import Response
 
 from curryproxy.responses import response_base
 from curryproxy.responses.response_base import ResponseBase

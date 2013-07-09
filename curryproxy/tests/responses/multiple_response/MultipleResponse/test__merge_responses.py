@@ -16,9 +16,9 @@ import json
 
 from mock import Mock
 from requests import Response
+from testtools import TestCase
 from webob import Response as WebObResponse
 from webob import Request
-from testtools import TestCase
 
 from curryproxy.responses import MultipleResponse
 

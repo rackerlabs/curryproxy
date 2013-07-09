@@ -12,7 +12,8 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from testtools import ExpectedException, TestCase
+from testtools import ExpectedException
+from testtools import TestCase
 
 from curryproxy import CurryProxy
 from curryproxy.errors import ConfigError

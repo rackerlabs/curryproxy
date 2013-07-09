@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from mock import patch
-from webob import Request
 from testtools import TestCase
+from webob import Request
 
+from curryproxy.responses import SingleResponse
 from curryproxy.routes import ForwardingRoute
 from curryproxy.tests.utils import RequestsResponseMock
-from curryproxy.responses import SingleResponse
 
 
 class Test__Call__(TestCase):

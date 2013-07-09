@@ -14,8 +14,8 @@
 # limitations under the License.
 from mock import Mock
 from requests import Response
-from webob import Request
 from testtools import TestCase
+from webob import Request
 
 from curryproxy.responses import MultipleResponse
 from curryproxy.responses.response_base import ResponseBase

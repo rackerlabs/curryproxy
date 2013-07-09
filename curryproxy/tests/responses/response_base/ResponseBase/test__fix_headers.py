@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from mock import Mock
+from testtools import TestCase
 from webob import Request
 from webob import Response
-from testtools import TestCase
 
 from curryproxy.responses.response_base import ResponseBase
 

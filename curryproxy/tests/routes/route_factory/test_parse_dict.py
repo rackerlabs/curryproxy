@@ -15,8 +15,8 @@
 from testtools import ExpectedException
 from testtools import TestCase
 
-from curryproxy.routes import route_factory
 from curryproxy.errors import ConfigError
+from curryproxy.routes import route_factory
 
 
 class TestParse_Dict(TestCase):

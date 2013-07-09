@@ -19,8 +19,8 @@ from webob import Request as WebObRequest
 from webob import Response as WebObResponse
 
 from curryproxy.responses import MultipleResponse
-from curryproxy.tests.utils import RequestsResponseMock
 from curryproxy.responses.response_base import ResponseBase
+from curryproxy.tests.utils import RequestsResponseMock
 
 
 class Test_Aggregate_Response_Bodies(TestCase):

@@ -31,14 +31,13 @@ import urllib
 import grequests
 
 from curryproxy.errors import ConfigError
+from curryproxy.errors import RequestError
+from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
 from curryproxy.responses import MultipleResponse
-from curryproxy.errors import RequestError
-from curryproxy.routes.route_base import RouteBase
 from curryproxy.responses import SingleResponse
-
-from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
+from curryproxy.routes.route_base import RouteBase
 
 
 ENDPOINTS_WILDCARD = '{Endpoint_IDs}'

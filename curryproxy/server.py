@@ -27,12 +27,11 @@ from webob import Request
 from webob import Response
 
 from curryproxy.errors import ConfigError
+from curryproxy.errors import RequestError
+from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 from curryproxy.helpers import exception_wrapper
 from curryproxy.helpers import profile_wrapper
-from curryproxy.errors import RequestError
 from curryproxy.routes import route_factory
-
-from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 
 
 class CurryProxy(object):
