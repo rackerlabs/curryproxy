@@ -1,0 +1,5 @@
+recursive-exclude bin *
+
+recursive-include curryproxy/tests/etc *.conf *.json
+
+include README.md

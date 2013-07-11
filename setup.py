@@ -12,20 +12,34 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import setuptools
+from setuptools import find_packages
+from setuptools import setup
 
 
-setuptools.setup(
+setup(
     name='curryproxy',
-    version='0.1',
-    description='Proxy for globally distributed APIs',
-    license="TBD",
+    version='0.1.0',
+    description='A proxy and aggregator for querying multiple instances of an '
+    'API spread across globally distributed data centers.',
+    long_description=open('README.md').read(),
     author='Bryan Davidson',
     author_email='bryan.davidson@rackspace.com',
-    url='https://one.rackspace.com/display/atlanta/Curry',
-    packages=setuptools.find_packages(
-        exclude=['bin', "*.tests", "*.tests.*", "tests.*", "tests"]),
-    include_package_data=True,
+    url='https://github.com/rackerlabs/curryproxy',
+    packages=find_packages(),
+    install_requires=open('tools/pip-requires').read(),
+    license='Apache 2.0',
+    tests_require=open('tools/test-requires').read(),
     test_suite='nose.collector',
-    install_requires=open('tools/pip-requires', 'r').read()
+    classifiers=(
+        'Development Status :: 5 - Production/Stable',
+        'License :: OSI Approved :: Apache Software License',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Internet :: Proxy Servers',
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+        'Topic :: Software Development :: Libraries :: Python Modules'
+    )
 )
