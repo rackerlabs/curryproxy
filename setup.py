@@ -1,5 +1,7 @@
+import os
 import setuptools
 
+requires = os.path.join('tools', 'pip-requires')
 
 setuptools.setup(
     name='curryproxy',
@@ -8,10 +10,10 @@ setuptools.setup(
     license="TBD",
     author='Bryan Davidson',
     author_email='bryan.davidson@rackspace.com',
-    url='https://one.rackspace.com/display/atlanta/Curry',
+    url='https://github.com/rackerlabs/Curry',
     packages=setuptools.find_packages(
         exclude=['bin', "*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
     test_suite='nose.collector',
-    install_requires=open('tools/pip-requires', 'r').read()
+    install_requires=open(requires).read().splitlines()
 )
