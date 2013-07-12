@@ -29,3 +29,17 @@ Setup
 -------
 - OData support for server-side ordering and paging
 - Response caching for a specified time
+
+Contributing
+------------
+
+Run basic code quality tests before submitting a code contribution:
+
+```
+tox -e flake8
+tox -e py27
+tox -e py33
+tox -e pylint-errors
+```
+
+Thanks!
