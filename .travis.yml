@@ -1,4 +1,4 @@
-language: python
+language: "python"
 python:
   - "2.7"
 before_install:
@@ -10,4 +10,4 @@ install:
   - "pip install -r tools/test-requires --use-mirrors"
 script:
   - "nosetests"
-  - "pep8 curryproxy"
+  - "flake8 curryproxy --max-complexity 11"
