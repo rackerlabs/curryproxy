@@ -1,3 +1,29 @@
+# Copyright (c) 2013 Rackspace, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""The classes in this module have been lifted into the package namespace.
+
+Classes:
+    EndpointsRoute: Handles forwarding a request to multiple backend endpoints.
+
+Attributes:
+    ENDPOINTS_WILDCARD: Wildcard which must be present in each URL pattern an
+        EndpointsRoute can handle. The endpoints CurryProxy ultimately calls
+        are determined by the endpoint IDs specified in place of the wildcard
+        for a request.
+
+"""
 import logging
 import re
 import urllib
@@ -5,21 +31,45 @@ import urllib
 import grequests
 
 from curryproxy.errors import ConfigError
+from curryproxy.errors import RequestError
+from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
 from curryproxy.responses import MultipleResponse
-from curryproxy.errors import RequestError
-from curryproxy.routes.route_base import RouteBase
 from curryproxy.responses import SingleResponse
-
-from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
+from curryproxy.routes.route_base import RouteBase
 
 
 ENDPOINTS_WILDCARD = '{Endpoint_IDs}'
 
 
 class EndpointsRoute(RouteBase):
+    """Handles forwarding a request to multiple backend endpoints.
+
+    A request matched to this route will be forwarded to the configured
+    endpoint with very little modification. The response received from the
+    destination endpoint will be directly forwarded back to the client.
+
+    """
     def __init__(self, url_patterns, endpoints, priority_errors):
+        """Initializes a new EndpointsRoute.
+
+        Args:
+            url_patterns: List of URL patterns which this route will handle.
+                Incoming requests must begin with one of these patterns for
+                this route to handle the request.
+            endpoints: Dictionary mapping endpoint IDs to endpoint URLs.
+                Endpoint IDs specified in incoming requests will be mapped to
+                destination endpoints based on the values in this dictionary.
+            priority_errors: List of error status codes, in order of
+                precedence, to be immediately returned to the client if
+                received from a destination endpoint.
+
+        Raises:
+            ConfigError: An error was detected when parsing the data for this
+                route.
+
+        """
         self._url_patterns = url_patterns
         self._endpoints = {}
         self._priority_errors = priority_errors
@@ -77,6 +127,27 @@ class EndpointsRoute(RouteBase):
         return response.response
 
     def _create_forwarded_urls(self, request_url):
+        """Constructs the destination endpoint(s) to request.
+
+        Finds the matching URL pattern for the request_url. Once found, the
+        final destination URLs are determined based on the endpoint IDs
+        specified in the request in place of the wildcard section of the URL
+        pattern. Finally, anything trailing the URL pattern is appended to each
+        destination URL.
+
+        Args:
+            request_url: Incoming request URL from the client to be matched to
+                a URL pattern and parsed to form the final destination URL(s).
+
+        Returns:
+            List of final destination URL(s) to which the incoming request
+            should be forwarded.
+
+        Raises:
+            RequestError: The incoming request did not match any URL patterns
+                for this route.
+
+        """
         # Extract endpoints from request
         url_pattern = self._find_pattern_for_request(request_url)
         url_pattern_parts = url_pattern.split(ENDPOINTS_WILDCARD)
