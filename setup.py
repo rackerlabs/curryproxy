@@ -18,7 +18,7 @@ from setuptools import setup
 
 setup(
     name='curryproxy',
-    version='0.1.0',
+    version='1.0.0',
     description='A proxy and aggregator for querying multiple instances of an '
     'API spread across globally distributed data centers.',
     long_description=open('README.rst').read(),
