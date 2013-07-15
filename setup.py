@@ -21,7 +21,7 @@ setup(
     version='0.1.0',
     description='A proxy and aggregator for querying multiple instances of an '
     'API spread across globally distributed data centers.',
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     author='Bryan Davidson',
     author_email='bryan.davidson@rackspace.com',
     url='https://github.com/rackerlabs/curryproxy',
