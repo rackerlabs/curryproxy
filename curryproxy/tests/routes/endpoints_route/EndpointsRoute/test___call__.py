@@ -49,7 +49,10 @@ class Test__Call__(TestCase):
                                 '5': 'http://5.example.com/'}
         self.endpoint_route = EndpointsRoute(url_patterns, endpoint, [], [])
         self.endpoints_route = EndpointsRoute(url_patterns, endpoints, [], [])
-        self.endpoints_route_with_ignore = EndpointsRoute(url_patterns, endpoints_for_ignore, [], [0, 400, 500, 501, 502, 503])
+        self.endpoints_route_with_ignore = EndpointsRoute(url_patterns,
+                                                 endpoints_for_ignore,
+                                                 [],
+                                                 [0, 400, 500, 501, 502, 503])
 
     def test_destination_urls(self):
         request = Request.blank('http://example.com/1,2/path')
@@ -131,10 +134,10 @@ class Test__Call__(TestCase):
         request = Request.blank('http://example.com/1,2,3,4,5/path')
         headers = {'Content-Type': 'application/json'}
 
-        response1 = RequestsResponseMock(status_code=200, headers = headers)
-        response2 = RequestsResponseMock(status_code=400, headers = headers)
-        response3 = RequestsResponseMock(status_code=400, headers = headers)
-        response4 = RequestsResponseMock(status_code=200, headers = headers)
+        response1 = RequestsResponseMock(status_code=200, headers=headers)
+        response2 = RequestsResponseMock(status_code=400, headers=headers)
+        response3 = RequestsResponseMock(status_code=400, headers=headers)
+        response4 = RequestsResponseMock(status_code=200, headers=headers)
         response5 = None
         self.grequests_map.return_value = [response1,
                                            response2,

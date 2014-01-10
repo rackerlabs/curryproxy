@@ -108,7 +108,7 @@ class TestParse_Dict(TestCase):
 
         route = route_factory.parse_dict(route_dict)
 
-        self.assertEqual(range(401,405), route._ignore_errors)
+        self.assertEqual(range(401, 405), route._ignore_errors)
 
     def test_endpoints_ignore_errors_range_entry_invalid_separator(self):
         ignore_errors = ["401--404"]
