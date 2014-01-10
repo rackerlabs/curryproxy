@@ -73,7 +73,38 @@ def parse_dict(route_config):
         if 'priority_errors' in route_config:
             priority_errors = route_config['priority_errors']
 
-        return EndpointsRoute(url_patterns, endpoints, priority_errors)
+        ignore_errors = set()
+        if 'ignore_errors' in route_config:
+            for entry in route_config['ignore_errors']:
+                if entry.count('-') > 1:
+                    raise ConfigError('The ignore error entry cannot contain multiple hyphens')
+                elif entry.count('-') > 0:
+                    start = entry.split('-')[0]
+                    stop = entry.split('-')[1]
+
+                    if '' in [start, stop]:
+                        raise ConfigError('Ignore error ranges must include both starting and stopping values')
+
+                    try:
+                        start_num = int(start)
+                        stop_num = int(stop)
+                        
+                        if start_num > stop_num:
+                            raise ConfigError('The range beginning must be less than or equal to the range end')
+                        if stop_num > 599:
+                            raise ConfigError('Valid range values are between 0 and 599')
+
+                        ignore_errors.update(range(start_num,stop_num+1))
+
+                    except ValueError:
+                        raise ConfigError('The ignore entry must be a valid numeric error code')
+                else:
+                    try:
+                        ignore_errors.add(int(entry))
+                    except ValueError:
+                        raise ConfigError('The ignore entry must be a valid numeric error code')
+
+        return EndpointsRoute(url_patterns, endpoints, priority_errors, list(ignore_errors))
 
     raise ConfigError('The route "{0}" must contain either "forwarding_url" '
                       'or "endpoints"'.format(url_patterns))

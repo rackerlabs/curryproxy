@@ -81,6 +81,103 @@ class TestParse_Dict(TestCase):
 
         self.assertEqual([], route._priority_errors)
 
+    def test_endpoints_ignore_errors_single_entry_valid_number(self):
+        ignore_errors = ["401"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        route = route_factory.parse_dict(route_dict)
+
+        self.assertEqual([401], route._ignore_errors)
+
+    def test_endpoints_ignore_errors_single_entry_invalid_number(self):
+        ignore_errors = ["401XYZ"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        with ExpectedException(ConfigError):
+            route_factory.parse_dict(route_dict)
+
+    def test_endpoints_ignore_errors_range_entry_valid(self):
+        ignore_errors = ["401-404"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        route = route_factory.parse_dict(route_dict)
+
+        self.assertEqual(range(401,405), route._ignore_errors)
+
+    def test_endpoints_ignore_errors_range_entry_invalid_separator(self):
+        ignore_errors = ["401--404"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        with ExpectedException(ConfigError):
+            route_factory.parse_dict(route_dict)
+
+    def test_endpoints_ignore_errors_range_entry_invalid_start_number(self):
+        ignore_errors = ["401A-404"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        with ExpectedException(ConfigError):
+            route_factory.parse_dict(route_dict)
+
+    def test_endpoints_ignore_errors_range_entry_invalid_stop_number(self):
+        ignore_errors = ["401-404A"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        with ExpectedException(ConfigError):
+            route_factory.parse_dict(route_dict)
+
+    def test_endpoints_ignore_errors_range_entry_invalid_range_max(self):
+        ignore_errors = ["400-600"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        with ExpectedException(ConfigError):
+            route_factory.parse_dict(route_dict)
+
+    def test_endpoints_ignore_errors_range_entry_invalid_range_reversed(self):
+        ignore_errors = ["500-400"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        with ExpectedException(ConfigError):
+            route_factory.parse_dict(route_dict)
+
+    def test_endpoints_ignore_errors_missing(self):
+        route = route_factory.parse_dict(self.endpoints_config)
+
+        self.assertEqual([], route._ignore_errors)
+
+    def test_endpoints_ignore_errors_range_entry_missing_start_number(self):
+        ignore_errors = ["-404"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        with ExpectedException(ConfigError):
+            route_factory.parse_dict(route_dict)
+
+    def test_endpoints_ignore_errors_range_entry_missing_stop_number(self):
+        ignore_errors = ["401-"]
+        route_dict = {'route': self.endpoints_pattern,
+                      'endpoints': self.endpoints,
+                      'ignore_errors': ignore_errors}
+
+        with ExpectedException(ConfigError):
+            route_factory.parse_dict(route_dict)
+
     def test_endpoints_wildcard_missing(self):
         config = {'route': self.forwarding_pattern,
                   'endpoints': self.endpoints}

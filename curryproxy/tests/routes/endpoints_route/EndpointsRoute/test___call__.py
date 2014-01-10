@@ -26,6 +26,7 @@ from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
 from curryproxy.responses import SingleResponse
+from curryproxy.responses import MultipleResponse
 from curryproxy.routes import EndpointsRoute
 from curryproxy.tests.utils import RequestsResponseMock
 
@@ -41,8 +42,14 @@ class Test__Call__(TestCase):
         endpoint = {'test': 'http://example.com/'}
         endpoints = {'1': 'http://1.example.com/',
                      '2': 'http://2.example.com/'}
-        self.endpoint_route = EndpointsRoute(url_patterns, endpoint, [])
-        self.endpoints_route = EndpointsRoute(url_patterns, endpoints, [])
+        endpoints_for_ignore = {'1': 'http://1.example.com/',
+                                '2': 'http://2.example.com/',
+                                '3': 'http://3.example.com/',
+                                '4': 'http://4.example.com/',
+                                '5': 'http://5.example.com/'}
+        self.endpoint_route = EndpointsRoute(url_patterns, endpoint, [], [])
+        self.endpoints_route = EndpointsRoute(url_patterns, endpoints, [], [])
+        self.endpoints_route_with_ignore = EndpointsRoute(url_patterns, endpoints_for_ignore, [], [0, 400, 500, 501, 502, 503])
 
     def test_destination_urls(self):
         request = Request.blank('http://example.com/1,2/path')
@@ -120,6 +127,41 @@ class Test__Call__(TestCase):
         route_patcher___init__.stop()
         route_patcher_response.stop()
 
+    def test_error_response_ignore_errors(self):
+        request = Request.blank('http://example.com/1,2,3,4,5/path')
+        headers = {'Content-Type': 'application/json'}
+
+        response1 = RequestsResponseMock(status_code=200, headers = headers)
+        response2 = RequestsResponseMock(status_code=400, headers = headers)
+        response3 = RequestsResponseMock(status_code=400, headers = headers)
+        response4 = RequestsResponseMock(status_code=200, headers = headers)
+        response5 = None
+        self.grequests_map.return_value = [response1,
+                                           response2,
+                                           response3,
+                                           response4,
+                                           response5]
+
+        route_patcher___init__ = patch.object(MultipleResponse,
+                                              '__init__',
+                                              return_value=None)
+        multi_response = route_patcher___init__.start()
+
+        mock_response = time.time()
+        route_patcher_response = patch.object(MultipleResponse,
+                                              'response',
+                                              new=mock_response)
+        route_patcher_response.start()
+
+        response = self.endpoints_route_with_ignore(request)
+
+        args, kwargs = multi_response.call_args
+        self.assertEqual(response, mock_response)
+        self.assertEqual(2, len(args[1]))
+
+        route_patcher___init__.stop()
+        route_patcher_response.stop()
+
     def test_error_response_priority_errors(self):
         request = Request.blank('http://example.com/1,2/path')
 
@@ -177,7 +219,8 @@ class Test__Call__(TestCase):
     def test_grequests_streamed(self):
         request = Request.blank('http://example.com/test/path')
 
-        with ExpectedException(TypeError):
+        # Need to catch exception to check the stream argument
+        with ExpectedException(IndexError):
             self.endpoint_route(request)
 
         self.assertTrue({'stream': True} in self.grequests_map.call_args)

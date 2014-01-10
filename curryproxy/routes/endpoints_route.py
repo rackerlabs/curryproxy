@@ -51,7 +51,7 @@ class EndpointsRoute(RouteBase):
     destination endpoint will be directly forwarded back to the client.
 
     """
-    def __init__(self, url_patterns, endpoints, priority_errors):
+    def __init__(self, url_patterns, endpoints, priority_errors, ignore_errors):
         """Initializes a new EndpointsRoute.
 
         Args:
@@ -64,6 +64,9 @@ class EndpointsRoute(RouteBase):
             priority_errors: List of error status codes, in order of
                 precedence, to be immediately returned to the client if
                 received from a destination endpoint.
+            ignore_errors: List of error status codes or error status code
+                ranges to exempt when checking response codes.  Format is
+                ["400", "403-500"].
 
         Raises:
             ConfigError: An error was detected when parsing the data for this
@@ -73,6 +76,7 @@ class EndpointsRoute(RouteBase):
         self._url_patterns = url_patterns
         self._endpoints = {}
         self._priority_errors = priority_errors
+        self._ignore_errors = ignore_errors
 
         if '*' in endpoints:
             raise ConfigError('Asterisks are not permitted as endpoint IDs.')
@@ -102,6 +106,15 @@ class EndpointsRoute(RouteBase):
                                       verify=True)
                     for destination_url in destination_urls)
         requests_responses = grequests.map(requests, stream=True)
+
+        valid_responses = []
+        for r in requests_responses:
+            if r != None:
+                if r.status_code not in self._ignore_errors:
+                  valid_responses.append(r)
+            elif 0 not in self._ignore_errors:
+                valid_responses.append(r)
+        requests_responses = valid_responses
 
         response = None
         if None in requests_responses:

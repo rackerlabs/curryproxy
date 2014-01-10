@@ -26,13 +26,13 @@ class Test__Init__(TestCase):
                      "two": "http://2.example.com/"}
 
         with ExpectedException(ConfigError):
-            EndpointsRoute(None, endpoints, None)
+            EndpointsRoute(None, endpoints, None, None)
 
     def test_endpoint_ids_lowered(self):
         endpoints = {"ONE": "http://1.example.com/",
                      "two": "http://2.example.com/"}
 
-        endpoints_route = EndpointsRoute(None, endpoints, None)
+        endpoints_route = EndpointsRoute(None, endpoints, None, None)
 
         self.assertTrue('one' in endpoints_route._endpoints)
         self.assertFalse('ONE' in endpoints_route._endpoints)
@@ -42,4 +42,4 @@ class Test__Init__(TestCase):
                      "*": "http://2.example.com/"}
 
         with ExpectedException(ConfigError):
-            EndpointsRoute(None, endpoints, None)
+            EndpointsRoute(None, endpoints, None, None)

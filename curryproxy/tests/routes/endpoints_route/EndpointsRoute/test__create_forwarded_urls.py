@@ -27,7 +27,7 @@ class Test_Create_Forwarded_Urls(TestCase):
                         'https://www.example.com/{Endpoint_IDs}/']
         self.endpoints = {"one": "https://1.example.com/",
                           "two": "https://2.example.com/"}
-        self.route = EndpointsRoute(url_patterns, self.endpoints, [])
+        self.route = EndpointsRoute(url_patterns, self.endpoints, [], [])
 
     def test_all_endpoints(self):
         request_path = 'path'
