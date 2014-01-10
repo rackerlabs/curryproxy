@@ -17,12 +17,43 @@
 Functions:
     parse_dict: Produces a route based on an entry in CurryProxy's
         configuration file.
+    parse_ignore_rules: Parses CurryProxy's configuration file for
+        rules defining return codes that may be bypassed.
 
 """
 from curryproxy.errors import ConfigError
 from curryproxy.routes import EndpointsRoute
 from curryproxy.routes import ForwardingRoute
 from curryproxy.routes import StatusRoute
+
+
+def parse_ignore_rules(route_config):
+    ignore_errors = set()
+    if 'ignore_errors' in route_config:
+        for entry in route_config['ignore_errors']:
+            hyphens = entry.count('-')
+            try:
+                if hyphens > 1:
+                    # Malformed
+                    raise ValueError
+                elif hyphens > 0:
+                    # Add range rule
+                    [start, stop] = map(int, entry.split('-'))
+                else:
+                    # Add single rule
+                    start = int(entry)
+                    stop = start
+            except ValueError:
+                raise ConfigError('Rules must be numbers in the format '
+                                  'of "400" or "400-500"')
+            if stop > 599:
+                raise ConfigError('Error status is constrained to the '
+                                  'range 100 - 599')
+            if start > stop:
+                raise ConfigError('Start value of a range must be less '
+                                  'than or equal to the stop value')
+            ignore_errors.update(range(start, stop + 1))
+    return ignore_errors
 
 
 def parse_dict(route_config):
@@ -73,31 +104,7 @@ def parse_dict(route_config):
         if 'priority_errors' in route_config:
             priority_errors = route_config['priority_errors']
 
-        ignore_errors = set()
-        if 'ignore_errors' in route_config:
-            for entry in route_config['ignore_errors']:
-                hyphens = entry.count('-')
-                try:
-                    if hyphens > 1:
-                        # Malformed
-                        raise ValueError
-                    elif hyphens > 0:
-                        # Add range rule
-                        [start, stop] = map(int, entry.split('-'))
-                    else:
-                        # Add single rule
-                        start = int(entry)
-                        stop = start
-                except ValueError:
-                    raise ConfigError('Rules must be numbers in the format '
-                                      'of "400" or "400-500"')
-                if stop > 599:
-                    raise ConfigError('Error status is constrained to the '
-                                      'range 100 - 599')
-                if start > stop:
-                    raise ConfigError('Start value of a range must be less '
-                                      'than or equal to the stop value')
-                ignore_errors.update(range(start, stop + 1))
+        ignore_errors = parse_ignore_rules(route_config)
 
         return EndpointsRoute(url_patterns,
                               endpoints,

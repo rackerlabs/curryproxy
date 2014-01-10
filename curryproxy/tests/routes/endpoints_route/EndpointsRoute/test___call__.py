@@ -50,9 +50,10 @@ class Test__Call__(TestCase):
         self.endpoint_route = EndpointsRoute(url_patterns, endpoint, [], [])
         self.endpoints_route = EndpointsRoute(url_patterns, endpoints, [], [])
         self.endpoints_route_with_ignore = EndpointsRoute(url_patterns,
-                                                 endpoints_for_ignore,
-                                                 [],
-                                                 [0, 400, 500, 501, 502, 503])
+                                                          endpoints_for_ignore,
+                                                          [],
+                                                          [0, 400, 500, 501,
+                                                           502, 503])
 
     def test_destination_urls(self):
         request = Request.blank('http://example.com/1,2/path')
