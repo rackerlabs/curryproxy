@@ -25,7 +25,7 @@ class Test_Find_Pattern_For_Request(TestCase):
                              'https://www.example.com/{Endpoint_IDs}/']
         endpoints = {"one": "https://1.example.com/",
                      "two": "https://2.example.com/"}
-        self.route = EndpointsRoute(self.url_patterns, endpoints, [])
+        self.route = EndpointsRoute(self.url_patterns, endpoints, [], [])
 
     def test_case_insensitivity(self):
         request_url = 'https://example.com/one,TwO/path'
