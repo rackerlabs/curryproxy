@@ -162,6 +162,8 @@ class Test__Call__(TestCase):
         args, kwargs = multi_response.call_args
         self.assertEqual(response, mock_response)
         self.assertEqual(2, len(args[1]))
+        self.assertEqual(False, 400 in [r.status_code for r in args[1]])
+        self.assertEqual(True, 200 in [r.status_code for r in args[1]])
 
         route_patcher___init__.stop()
         route_patcher_response.stop()
