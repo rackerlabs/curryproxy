@@ -118,7 +118,12 @@ class EndpointsRoute(RouteBase):
                     valid_responses.append(r)
             elif 0 not in self._ignore_errors:
                 valid_responses.append(r)
-        requests_responses = valid_responses
+
+        if len(valid_responses) == 0:
+            response = MultipleResponse(request, requests_responses)
+            return response.response
+        else:
+            requests_responses = valid_responses
 
         response = None
         if None in requests_responses:
