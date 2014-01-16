@@ -176,7 +176,7 @@ class Test__Call__(TestCase):
         response2 = RequestsResponseMock(status_code=400, headers=headers)
         response3 = RequestsResponseMock(status_code=400, headers=headers)
         response4 = RequestsResponseMock(status_code=400, headers=headers)
-        response5 = None
+        response5 = RequestsResponseMock(status_code=400, headers=headers)
         self.grequests_map.return_value = [response1,
                                            response2,
                                            response3,
@@ -198,7 +198,7 @@ class Test__Call__(TestCase):
 
         args, kwargs = multi_response.call_args
         self.assertEqual(response, mock_response)
-        self.assertEqual(4, len(args[1]))
+        self.assertEqual(5, len(args[1]))
         self.assertEqual(True, 400 in [r.status_code for r in args[1]])
 
         route_patcher___init__.stop()
@@ -262,7 +262,7 @@ class Test__Call__(TestCase):
         request = Request.blank('http://example.com/test/path')
 
         # Need to catch exception to check the stream argument
-        with ExpectedException(IndexError):
+        with ExpectedException(TypeError):
             self.endpoint_route(request)
 
         self.assertTrue({'stream': True} in self.grequests_map.call_args)
