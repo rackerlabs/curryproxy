@@ -168,6 +168,42 @@ class Test__Call__(TestCase):
         route_patcher___init__.stop()
         route_patcher_response.stop()
 
+    def test_error_response_ignore_all_responses(self):
+        request = Request.blank('http://example.com/1,2,3,4,5/path')
+        headers = {'Content-Type': 'application/json'}
+
+        response1 = RequestsResponseMock(status_code=400, headers=headers)
+        response2 = RequestsResponseMock(status_code=400, headers=headers)
+        response3 = RequestsResponseMock(status_code=400, headers=headers)
+        response4 = RequestsResponseMock(status_code=400, headers=headers)
+        response5 = None
+        self.grequests_map.return_value = [response1,
+                                           response2,
+                                           response3,
+                                           response4,
+                                           response5]
+
+        route_patcher___init__ = patch.object(MultipleResponse,
+                                              '__init__',
+                                              return_value=None)
+        multi_response = route_patcher___init__.start()
+
+        mock_response = time.time()
+        route_patcher_response = patch.object(MultipleResponse,
+                                              'response',
+                                              new=mock_response)
+        route_patcher_response.start()
+
+        response = self.endpoints_route_with_ignore(request)
+
+        args, kwargs = multi_response.call_args
+        self.assertEqual(response, mock_response)
+        self.assertEqual(4, len(args[1]))
+        self.assertEqual(True, 400 in [r.status_code for r in args[1]])
+
+        route_patcher___init__.stop()
+        route_patcher_response.stop()
+
     def test_error_response_priority_errors(self):
         request = Request.blank('http://example.com/1,2/path')
 
