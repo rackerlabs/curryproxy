@@ -173,8 +173,8 @@ class Test__Call__(TestCase):
         headers = {'Content-Type': 'application/json'}
 
         response1 = RequestsResponseMock(status_code=400, headers=headers)
-        response2 = RequestsResponseMock(status_code=400, headers=headers)
-        response3 = RequestsResponseMock(status_code=400, headers=headers)
+        response2 = RequestsResponseMock(status_code=500, headers=headers)
+        response3 = RequestsResponseMock(status_code=500, headers=headers)
         response4 = RequestsResponseMock(status_code=400, headers=headers)
         response5 = RequestsResponseMock(status_code=400, headers=headers)
         self.grequests_map.return_value = [response1,
@@ -183,20 +183,20 @@ class Test__Call__(TestCase):
                                            response4,
                                            response5]
 
-        route_patcher___init__ = patch.object(MultipleResponse,
+        route_patcher___init__ = patch.object(ErrorResponse,
                                               '__init__',
                                               return_value=None)
-        multi_response = route_patcher___init__.start()
+        error_response = route_patcher___init__.start()
 
         mock_response = time.time()
-        route_patcher_response = patch.object(MultipleResponse,
+        route_patcher_response = patch.object(ErrorResponse,
                                               'response',
                                               new=mock_response)
         route_patcher_response.start()
 
         response = self.endpoints_route_with_ignore(request)
 
-        args, kwargs = multi_response.call_args
+        args, kwargs = error_response.call_args
         self.assertEqual(response, mock_response)
         self.assertEqual(5, len(args[1]))
         self.assertEqual(True, 400 in [r.status_code for r in args[1]])
