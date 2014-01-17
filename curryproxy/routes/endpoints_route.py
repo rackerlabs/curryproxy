@@ -111,14 +111,7 @@ class EndpointsRoute(RouteBase):
                     for destination_url in destination_urls)
         requests_responses = grequests.map(requests, stream=True)
 
-        valid_responses = []
-        for r in requests_responses:
-            if r is not None:
-                if r.status_code not in self._ignore_errors:
-                    valid_responses.append(r)
-            elif 0 not in self._ignore_errors:
-                valid_responses.append(r)
-        requests_responses = valid_responses
+        requests_responses = self._filter_responses(requests_responses)
 
         response = None
         if None in requests_responses:
@@ -142,6 +135,19 @@ class EndpointsRoute(RouteBase):
             response = MultipleResponse(request, requests_responses)
 
         return response.response
+
+    def _filter_responses(self, responses):
+        valid_responses = []
+        for r in responses:
+            if r is not None:
+                if r.status_code not in self._ignore_errors:
+                    valid_responses.append(r)
+            elif 0 not in self._ignore_errors:
+                valid_responses.append(r)
+        if len(valid_responses) > 0:
+            return valid_responses
+        else:
+            return responses
 
     def _create_forwarded_urls(self, request_url):
         """Constructs the destination endpoint(s) to request.
