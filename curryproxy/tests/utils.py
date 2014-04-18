@@ -49,6 +49,7 @@ class RequestsResponseMock(Response):
         if hasattr(self, 'raw'):
             stream = Mock()
             stream.read = Mock(side_effect=[body, None])
+            stream.stream = Mock(side_effect=AttributeError())
             self.raw = stream
         else:
             raise AttributeError()
