@@ -12,13 +12,12 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from mock import Mock
-from requests import Response
 from testtools import TestCase
 from webob import Request as WebObRequest
 from webob import Response as WebObResponse
 
 from curryproxy.responses import MultipleResponse
+from curryproxy.tests.utils import RequestsResponseMock
 
 
 class Test_Aggregate_Responses(TestCase):
@@ -36,13 +35,8 @@ class Test_Aggregate_Responses(TestCase):
         def decode_content():
             pass
 
-        response = Response()
-        response.status_code = status_code
-        response.headers = headers
-        stream = Mock()
-        stream.read = Mock()
-        stream.read.side_effect = [body, None]
-        response.raw = stream
+        response = RequestsResponseMock(status_code=status_code,
+                                        headers=headers, body=body)
 
         return response
 

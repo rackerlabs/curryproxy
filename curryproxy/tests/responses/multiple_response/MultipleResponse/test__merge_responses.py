@@ -14,13 +14,12 @@
 # limitations under the License.
 import json
 
-from mock import Mock
-from requests import Response
 from testtools import TestCase
 from webob import Response as WebObResponse
 from webob import Request
 
 from curryproxy.responses import MultipleResponse
+from curryproxy.tests.utils import RequestsResponseMock
 
 
 class Test_Merge_Responses(TestCase):
@@ -43,13 +42,8 @@ class Test_Merge_Responses(TestCase):
         if not headers:
             headers = {'Content-Type': 'application/json'}
 
-        response = Response()
-        response.status_code = 200
-        response.headers = headers
-        stream = Mock()
-        stream.read = Mock()
-        stream.read.side_effect = [body, None]
-        response.raw = stream
+        response = RequestsResponseMock(status_code=200, headers=headers,
+                                        body=body)
 
         return response
 
