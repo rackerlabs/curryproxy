@@ -20,6 +20,7 @@
 				"url": "https://2.api.example.com/v2.0/"
 			}
 		],
+		"ignore_errors": ["500", "502-599"],
 		"priority_errors": [401]
 	}
 ]
