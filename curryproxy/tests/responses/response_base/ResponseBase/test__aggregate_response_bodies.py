@@ -81,6 +81,10 @@ class Test_Aggregate_Response_Bodies(TestCase):
         response_base._aggregate_response_bodies()
 
         response = response_base.response.json
+        self.assertEqual(
+            'application/json',
+            response_base.response.content_type,
+        )
         self.assertEqual(3, len(response))
 
         self.assertEqual(url_1, response[0]['url'])
