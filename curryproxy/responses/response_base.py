@@ -75,6 +75,7 @@ class ResponseBase(object):
             results.append(result)
 
         self._response.body = json.dumps(results)
+        self._response.content_type = 'application/json'
 
     def _fix_headers(self):
         """Adjusts the Content-Encoding and Date headers if needed."""
