@@ -111,6 +111,7 @@ class EndpointsRoute(RouteBase):
                     for destination_url in destination_urls)
         requests_responses = grequests.map(requests, stream=True)
 
+        self._log_responses(request, requests_responses)
         requests_responses = self._filter_responses(requests_responses)
 
         response = None
@@ -219,3 +220,18 @@ class EndpointsRoute(RouteBase):
                 return url_pattern
 
         return None
+
+    def _log_responses(self, request, responses):
+        if logging.getLogger(__name__).getEffectiveLevel() > logging.DEBUG:
+            return
+
+        message = "Responses received for: " + str(request.url)
+        for response in responses:
+            if response is not None:
+                message += (
+                    '; ' + str(response.status_code) + ': ' + str(response.url)
+                )
+            else:
+                message += '; None: Unknown'
+
+        logging.debug(message)
