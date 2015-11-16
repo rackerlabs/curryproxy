@@ -27,6 +27,7 @@ Attributes:
 import logging
 import re
 import urllib
+import urlparse
 
 import grequests
 
@@ -198,7 +199,9 @@ class EndpointsRoute(RouteBase):
         for endpoint_id in self._endpoints:
             if all_endpoints or endpoint_id in endpoint_ids:
                 url = self._endpoints[endpoint_id] + trailing_route
-                endpoint_urls.append(url)
+                endpoint_urls.append(
+                    self._resolve_query_string(url, endpoint_id)
+                )
 
         if len(endpoint_urls) == 0:
             raise RequestError('The incoming request did not specify a valid '
@@ -235,3 +238,33 @@ class EndpointsRoute(RouteBase):
                 message += '; None: Unknown'
 
         logging.debug(message)
+
+    def _resolve_query_string(self, url, endpoint_id):
+        split_url = urlparse.urlsplit(url)
+
+        query_dict = urlparse.parse_qs(split_url.query)
+
+        # Handle any endpoint-specific params
+        if 'curryproxy' in query_dict:
+            """We accept only the first instance of the curryproxy param in the
+            query string.  Each instance is a list of colon separated pairs of
+            strings (e.g. ['endpoint_identifier:key=value',]).
+            """
+            curry_param_list = query_dict['curryproxy'][0].split(',')
+
+            # Maps endpoint ID to dictionary of params
+            curry_param_dict = {}
+            for ep_qs_pair in curry_param_list:
+                ep_id, query_string = ep_qs_pair.split(':')
+                curry_param_dict[ep_id] = urlparse.parse_qs(query_string)
+
+            if endpoint_id in curry_param_dict:
+                query_dict.update(curry_param_dict[endpoint_id])
+
+            del query_dict['curryproxy']
+
+        # Cannot modify split_url.query (attribute), so reconstruct using
+        # individual components.
+        url_attr_list = list(split_url)
+        url_attr_list[3] = urllib.urlencode(query_dict, True)
+        return urlparse.urlunsplit(url_attr_list)
