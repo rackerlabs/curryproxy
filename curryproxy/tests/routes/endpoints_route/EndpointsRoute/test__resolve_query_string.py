@@ -71,3 +71,14 @@ class Test_Resolve_Query_String(TestCase):
         )
 
         self.assertEquals(self.request_base_url + '?test=123', url)
+
+    def test_upper_case_curryproxy_parameters(self):
+        url = self.route._resolve_query_string(
+            (
+                self.request_base_url +
+                '?curryproxy=A:test=123'
+            ),
+            'a'
+        )
+
+        self.assertEquals(self.request_base_url + '?test=123', url)
