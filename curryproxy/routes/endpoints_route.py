@@ -256,7 +256,9 @@ class EndpointsRoute(RouteBase):
             curry_param_dict = {}
             for ep_qs_pair in curry_param_list:
                 ep_id, query_string = ep_qs_pair.split(':')
-                curry_param_dict[ep_id] = urlparse.parse_qs(query_string)
+                curry_param_dict[ep_id.lower()] = urlparse.parse_qs(
+                    query_string
+                )
 
             if endpoint_id in curry_param_dict:
                 query_dict.update(curry_param_dict[endpoint_id])
