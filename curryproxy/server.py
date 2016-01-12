@@ -72,13 +72,19 @@ class CurryProxy(object):
                 route points to.
 
         """
-        try:
-            route_configs = json.load(open(routes_file))
-        except ValueError:
-            raise ConfigError('Configuration file contains invalid JSON.')
+        # Quick and dirty way of handling both yaml and json. There's probably
+        # a better way to do this...
 
-        for route_config in route_configs:
-            self._routes.append(route_factory.parse_dict(route_config))
+        load = yaml.safe_load if routes_file.endswith(".yaml") else json.load
+        with open(routes_file) as f:
+            try:
+                route_configs = load(f)
+                self._routes.extend(route_factory.load(route_configs))
+            except (ValueError, ParserError):
+                # Possible issue: Catching the upstream exception and raising
+                # our own loses information about where the error is. Somebody
+                # is going to complain about that one day. Probably me.
+                raise ConfigError('Formatting error in configuration file.')
 
     @exception_wrapper
     @profile_wrapper
