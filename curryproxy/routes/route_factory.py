@@ -22,7 +22,6 @@ Functions:
 
 """
 import itertools
-import collections
 
 from curryproxy.errors import ConfigError
 from curryproxy.routes import EndpointsRoute
@@ -82,33 +81,33 @@ def _load(route_configs):
     """
     assert route_configs['configVersion'] == CONF_LATEST_VERSION
 
-    for s in route_configs.get('status', []):
-        yield StatusRoute(s)
+    for route in route_configs.get('status', []):
+        yield StatusRoute(route)
 
     for src, dest in route_configs.get('forwards', {}).items():
         yield ForwardingRoute(src, dest)
 
-    for d in route_configs.get('routes', {}):
+    for route in route_configs.get('routes', []):
         # Config v2 almost but doesn't quite match the EndpointsRoute
         # constructor, so a bit of massaging is needed here...
-        d = d.copy()
+        route = route.copy()
 
         # Convert error ranges into discrete lists.
         ignore = []
-        for e in d['ignore_errors']:
-            e = str(e)
-            r = e.split("-")
-            start, end = int(r[0]), int(r[-1])
+        for err in route['ignore_errors']:
+            err = str(err)
+            bounds = err.split("-")
+            start, end = int(bounds[0]), int(bounds[-1])
             ignore.extend(range(start, end+1))
-        d['ignore_errors'] = ignore
+        route['ignore_errors'] = ignore
 
         # Accept singular url_pattern or plural url_patterns.
-        patterns = d.get('url_patterns', [])
-        if 'url_pattern' in d:
-            patterns.append(d.pop('url_pattern'))
-        d['url_patterns'] = patterns
+        patterns = route.get('url_patterns', [])
+        if 'url_pattern' in route:
+            patterns.append(route.pop('url_pattern'))
+        route['url_patterns'] = patterns
 
-        yield EndpointsRoute(**d)
+        yield EndpointsRoute(**route)
 
 
 def _convert(route_configs):
@@ -125,11 +124,11 @@ def _convert(route_configs):
     # First figure out what version we're working with.
     try:
         version = route_configs['configVersion']
-    except (TypeError):
+    except TypeError:
         # Version 1 had no specifier, but we can identify it anyway because its
         # root node was not a dict.
         version = 1
-    except (KeyError):
+    except KeyError:
         # If configVersion isn't provided, complain. Ideally this should
         # autodetect in future.
         raise ConfigError("configVersion format identifier missing.")
@@ -173,9 +172,10 @@ def _convert_v1(route_configs):
     newconf['routes'] = [d for d in route_configs
                          if 'endpoints' in d]
 
-    for ep in newconf['routes']:
-        ep['url_patterns'] = [ep.pop('route')]
-        ep['endpoints'] = {ep['id']: ep['url'] for ep in ep['endpoints']}
+    for route in newconf['routes']:
+        route['url_patterns'] = [route.pop('route')]
+        route['endpoints'] = {ep['id']: ep['url']
+                              for ep in route['endpoints']}
 
     return newconf
 
