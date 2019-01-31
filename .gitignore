@@ -1,3 +1,9 @@
 *.pyc
+*.egg-info
 .coverage
+.tox
+.cache
 .venv
+venv
+build
+dist

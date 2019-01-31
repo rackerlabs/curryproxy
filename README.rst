@@ -38,6 +38,11 @@ Limitations
 -----------
 - Merging responses from multiple endpoints together occurs only under certain conditions outlined on the `Multiple Endpoints Aggregation <https://github.com/rackerlabs/curryproxy/wiki/Multiple-Endpoints-Aggregation>`_ wiki page.
 
+Testing
+-------
+- `tox` will run unit tests. `tox -e lint` will run pylint and flake8
+  checks.
+
 Roadmap
 -------
 - OData support for server-side ordering and paging

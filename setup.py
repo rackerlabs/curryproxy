@@ -29,6 +29,7 @@ setup(
     install_requires=open('tools/pip-requires').read(),
     license='Apache 2.0',
     tests_require=open('tools/test-requires').read(),
+    extras_require={'test': open('tools/test-requires').read()},
     test_suite='nose.collector',
     classifiers=(
         'Development Status :: 5 - Production/Stable',
