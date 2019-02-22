@@ -1,13 +1,13 @@
-language: "python"
+dist: bionic
+sudo: false
+language: python
 python:
-  - "2.7"
+  - 2.7
 before_install:
- - "sudo apt-get update"
- - "sudo apt-get install libevent-dev"
-install:
-  - "pip install ."
-  - "pip install -r tools/pip-requires --use-mirrors"
-  - "pip install -r tools/test-requires --use-mirrors"
+  - sudo apt-get update
+  - sudo apt-get install libevent-dev # Why?
+  - pip install tox-travis
 script:
-  - "nosetests"
-  - "flake8 curryproxy --max-complexity 11"
+  # Travis appears to ignore the envlist set in tox.ini, so we have to
+  # specify the lint env here.
+  - tox -e py27,lint
