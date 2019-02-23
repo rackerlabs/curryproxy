@@ -1,7 +1,9 @@
-recursive-exclude bin *
+graft curryproxy
+graft deps
+graft etc
 
-recursive-include curryproxy/tests/etc *.conf *.json
+include README.rst AUTHORS.md HACKING.md
+include .pylintrc
+include tox.ini
 
-recursive-include tools *
-
-include README.md
+global-exclude *.pyc
