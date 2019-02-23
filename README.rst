@@ -56,8 +56,28 @@ Limitations
 
 Testing
 -------
-- `tox` will run unit tests. `tox -e lint` will run pylint and flake8
-  checks.
+
+Tests are set up to run with ``tox``.
+
+The default ``tox`` setup creates environments for each known-usable
+version of each of our dependencies, and runs the tests in each of them.
+That amounts to around a dozen environments at the moment, so you'll
+probably want to run them in parallel with ``tox -p auto``.
+
+If you don't want to be that thorough (perhaps you're smoke testing a
+work in progress), you can run against only the most recent supported
+versions of dependencies with ``tox -e py27``.
+
+You can test against specific dependency versions like this:
+
+::
+
+  tox -e py27-requests2.{2,3,4,5,6,7} -p auto
+  tox -e py27-webob1.{2,3,4,5} -p auto
+  tox -e py27-grequests0.{2,3} -p auto
+  tox -e py27-requests.latest
+
+``tox -e lint`` is also available, and will run various linting checks.
 
 Roadmap
 -------
