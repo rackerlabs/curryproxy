@@ -1,13 +1,11 @@
 dist: bionic
 sudo: false
-language: python
-python:
-  - 2.7
+language: generic # leave the venv magic to tox
 before_install:
   - sudo apt-get update
   - sudo apt-get install libevent-dev # Why?
-  - pip install tox-travis
+  - sudo apt-get install tox # Just in case tox has system-level dependencies
+  - pip install --user -U tox # For recent features like -p
+install: [] # Let tox install stuff
 script:
-  # Travis appears to ignore the envlist set in tox.ini, so we have to
-  # specify the lint env here.
-  - tox -e py27,lint
+  - tox -p auto
