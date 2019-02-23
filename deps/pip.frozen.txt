@@ -1,0 +1,10 @@
+# Pinned versions of all dependencies, nested or otherwise, as generated
+# by `pip freeze` in a developer-tested virtualenv. This should be
+# updated before each release, and can be installed with `pip install
+# curryproxy[frozen]`.
+
+gevent==1.4.0
+greenlet==0.4.15
+grequests==0.3.0
+requests==2.7.0
+WebOb==1.4.2

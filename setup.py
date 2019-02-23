@@ -16,6 +16,22 @@ from setuptools import find_packages
 from setuptools import setup
 
 
+def readdeps(filename):
+    """ Get a dependency list from a file.
+
+        Filters out comments and blank lines, so the result is suitable
+        to feed to setup() args.
+    """
+
+    with open(filename) as f:
+        return [line for line in f
+                if line and not line.startswith("#")]
+
+# Load dependencies
+deps = {"install": readdeps("deps/pip.install.txt"),
+        "frozen" : readdeps("deps/pip.frozen.txt"),
+        "tests"  : readdeps("deps/pip.tests.txt")}
+
 setup(
     name='curryproxy',
     version='1.1.2',
@@ -26,10 +42,11 @@ setup(
     author_email='bryan.davidson@rackspace.com',
     url='https://github.com/rackerlabs/curryproxy',
     packages=find_packages(),
-    install_requires=open('tools/pip-requires').read(),
+    install_requires=deps['install'],
     license='Apache 2.0',
-    tests_require=open('tools/test-requires').read(),
-    extras_require={'test': open('tools/test-requires').read()},
+    tests_require=deps['tests'],
+    extras_require={'tests': deps['tests'],
+                    'frozen': deps['frozen']},
     test_suite='nose.collector',
     classifiers=(
         'Development Status :: 5 - Production/Stable',

@@ -1,0 +1,6 @@
+# The known-good ranges of curryproxy's direct dependencies. The default
+# installation restricts to these ranges.
+
+grequests>=0.2,<0.4
+requests>=2.2,<2.8
+webob>=1.2,<1.5

@@ -1,0 +1,4 @@
+# System-package dependencies for APT platforms. Install these before
+# installing curryproxy.
+
+libevent-dev

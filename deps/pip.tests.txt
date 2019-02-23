@@ -1,0 +1,4 @@
+# Pip dependencies for the tests
+
+mock
+testtools
