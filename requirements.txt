@@ -1,0 +1,5 @@
+# Yes, this is intentionally just a dot. The dot means "install
+# whatever's in this directory according to its setup.py." This file is
+# only here to serve tools confused by its absence.
+
+.
