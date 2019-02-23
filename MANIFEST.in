@@ -5,5 +5,6 @@ graft etc
 include README.rst AUTHORS.md HACKING.md
 include .pylintrc
 include tox.ini
+include requirements.txt
 
 global-exclude *.pyc
