@@ -1,0 +1,14 @@
+status:
+  - http://api.example.com/status
+
+forwards:
+  http://api.example.com/v1.0/: https://v1.api.example.com/v1.0/
+
+routes:
+  api:
+    pattern: http://api.example.com/{Endpoint_IDs}/v2.0/
+    endpoints:
+      ep1: https://1.api.example.com/v2.0/
+      ep2: https://2.api.example.com/v2.0/
+    ignore_errors: [500, 502-599]
+    priority_errors: [401]

@@ -8,3 +8,4 @@ greenlet==0.4.15
 grequests==0.3.0
 requests==2.7.0
 WebOb==1.4.2
+pyyaml==3.13
