@@ -4,3 +4,4 @@
 grequests>=0.2,<0.4
 requests>=2.2,<2.8
 webob>=1.2,<1.5
+pyyaml>=3.10,<4

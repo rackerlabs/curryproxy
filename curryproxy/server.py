@@ -26,12 +26,12 @@ import logging.config
 from webob import Request
 from webob import Response
 
-from curryproxy.errors import ConfigError
+import curryproxy.routes
+import curryproxy.helpers as helpers
 from curryproxy.errors import RequestError
 from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 from curryproxy.helpers import exception_wrapper
 from curryproxy.helpers import profile_wrapper
-from curryproxy.routes import route_factory
 
 
 class CurryProxy(object):
@@ -42,8 +42,9 @@ class CurryProxy(object):
 
     """
     def __init__(self,
-                 routes_file='/etc/curryproxy/routes.json',
-                 logging_config='/etc/curryproxy/logging.conf'):
+                 routes_file=None,
+                 logging_config=None,
+                 confdir='/etc/curry'):
         """Initialize a new CurryProxy server.
 
         Create an instance of CurryProxy to use with a WSGI-compatible web
@@ -51,34 +52,53 @@ class CurryProxy(object):
         application.
 
         Args:
+            conf_dir: The directory in which to look for configuration
+                files. You can specify file paths individually, but you
+                don't have to.
             routes_file: Path to CurryProxy's main configuration file which
                 details the routes to be served and the backend endpoints each
-                route points to. If unspecified, defaults to
-                /etc/curryproxy/routes.json.
+                route points to. If unspecified, we look under `confdir`
+                for routes.yaml or routes.json, in that order.
             logging_config: Path to CurryProxy's logging configuration file. If
-                unspecified, defaults to /etc/curryproxy/logging.conf.
+                unspecified, defaults to {confdir}/logging.conf.
 
         """
-        self._routes = []
-        self._process_routes(routes_file)
-        logging.config.fileConfig(logging_config)
 
-    def _process_routes(self, routes_file):
-        """Read a configuration file and setup an instance of CurryProxy.
+        if logging_config:
+            logging.config.fileConfig(logging_config)
+        else:
+            try:
+                conf = helpers.load.search("logging", confdir)
+            except IOError:
+                logging.warning("No log configuration found, using defaults")
+            if isinstance(conf, dict):
+                # logging.conf doesn't return anything, but anything else
+                # has to get passed to dictConfig
+                logging.config.dictConfig(conf)
 
-        Args:
-            routes_file: Path to CurryProxy's main configuration file which
-                details the routes to be served and the backend endpoints each
-                route points to.
+        logging.info("Logging initialized")
+        logging.info("[INFO MESSAGE TEST]")
+        logging.debug("[DEBUG MESSAGE TEST]")
 
-        """
         try:
-            route_configs = json.load(open(routes_file))
-        except ValueError:
-            raise ConfigError('Configuration file contains invalid JSON.')
+            if routes_file:
+                logging.info("Looking for routes file at %s", routes_file)
+                conf = helpers.load(routes_file)
+            else:
+                logging.info("Looking for routes file under %s", confdir)
+                conf = helpers.load.search("routes", confdir)
+        except IOError:
+            path = routes_file if routes_file else confdir
+            logging.critical("Couldn't find routes file at/under %s", path)
+            raise
 
-        for route_config in route_configs:
-            self._routes.append(route_factory.parse_dict(route_config))
+        logging.info("Found routes file, setting up routes")
+        try:
+            self._routes = list(curryproxy.routes.make(conf))
+        except Exception as e:
+            logging.exception("Failure constructing routes: %s", e)
+            raise
+        logging.info("Initialization complete")
 
     @exception_wrapper
     @profile_wrapper
