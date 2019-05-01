@@ -1,0 +1,26 @@
+[
+	{
+		"status": [
+			"https://api.example.com/status"
+		]
+	},
+	{
+		"route": "https://api.example.com/v1.0/",
+		"forwarding_url": "https://1.api.example.com/v1.0/"
+	},
+	{
+		"route": "https://api.example.com/{Endpoint_IDs}/v2.0/",
+		"endpoints": [
+			{
+				"id": "ep1",
+				"url": "https://1.api.example.com/v2.0/"
+			},
+			{
+				"id": "ep2",
+				"url": "https://2.api.example.com/v2.0/"
+			}
+		],
+		"ignore_errors": [500, "502-599"],
+		"priority_errors": [401]
+	}
+]
