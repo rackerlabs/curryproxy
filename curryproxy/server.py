@@ -32,7 +32,10 @@ from curryproxy.errors import RequestError
 from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 from curryproxy.helpers import exception_wrapper
 from curryproxy.helpers import profile_wrapper
+from curryproxy.errors import ConfigError
 
+LOGCONF_FILENAME = "logging.yaml"
+ROUTES_FILENAME = "routes.yaml"
 
 class CurryProxy(object):
     """WSGI callable responsible for handling requests and returning responses.
@@ -41,62 +44,32 @@ class CurryProxy(object):
     of an API spread across globally distributed data centers.
 
     """
-    def __init__(self,
-                 routes_file=None,
-                 logging_config=None,
-                 confdir='/etc/curry'):
+    def __init__(self, confdir='/etc/curry'):
         """Initialize a new CurryProxy server.
 
         Create an instance of CurryProxy to use with a WSGI-compatible web
         server. The instance of CurryProxy adheres to PEP 333 as a WSGI
         application.
-
-        Args:
-            conf_dir: The directory in which to look for configuration
-                files. You can specify file paths individually, but you
-                don't have to.
-            routes_file: Path to CurryProxy's main configuration file which
-                details the routes to be served and the backend endpoints each
-                route points to. If unspecified, we look under `confdir`
-                for routes.yaml or routes.json, in that order.
-            logging_config: Path to CurryProxy's logging configuration file. If
-                unspecified, defaults to {confdir}/logging.conf.
-
         """
 
-        if logging_config:
-            logging.config.fileConfig(logging_config)
-        else:
-            try:
-                conf = helpers.load.search("logging", confdir)
-            except IOError:
-                logging.warning("No log configuration found, using defaults")
-            if isinstance(conf, dict):
-                # logging.conf doesn't return anything, but anything else
-                # has to get passed to dictConfig
-                logging.config.dictConfig(conf)
+        # Configure logging first (should this go elsewhere?)
+        helpers.init_log(os.path.join(confdir, LOGCONF_FILENAME))
 
-        logging.info("Logging initialized")
-        logging.info("[INFO MESSAGE TEST]")
-        logging.debug("[DEBUG MESSAGE TEST]")
-
+        # Now routes
+        path = os.path.join(confdir, ROUTES_FILENAME)
+        logging.info("Loading routes file from %s", path)
         try:
-            if routes_file:
-                logging.info("Looking for routes file at %s", routes_file)
-                conf = helpers.load(routes_file)
-            else:
-                logging.info("Looking for routes file under %s", confdir)
-                conf = helpers.load.search("routes", confdir)
-        except IOError:
-            path = routes_file if routes_file else confdir
-            logging.critical("Couldn't find routes file at/under %s", path)
+            conf = helpers.load(path)
+        except Exception as e:
+            logging.critical("Error loading routes from %s", path)
+            logging.critical("%s", e)
             raise
 
-        logging.info("Found routes file, setting up routes")
+        logging.info("Routes file loaded, setting up routes")
         try:
             self._routes = list(curryproxy.routes.make(conf))
         except Exception as e:
-            logging.exception("Failure constructing routes: %s", e)
+            logging.critical("Failure constructing routes: %s", e)
             raise
         logging.info("Initialization complete")
 

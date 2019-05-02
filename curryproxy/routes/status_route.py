@@ -18,6 +18,8 @@ Classes:
     StatusRoute: Route to check the status of CurryProxy.
 
 """
+import logging
+
 from curryproxy.responses import StatusResponse
 from curryproxy.routes.route_base import RouteBase
 
@@ -39,6 +41,9 @@ class StatusRoute(RouteBase):
                 this route to handle the request.
 
         """
+        logging.debug("constructing status route")
+        for i, url in enumerate(url_patterns):
+            logging.debug("status url %s: %s", i, url)
         self._url_patterns = url_patterns
 
     def __call__(self, request):

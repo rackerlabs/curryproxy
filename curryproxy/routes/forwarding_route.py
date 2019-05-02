@@ -22,6 +22,7 @@ import re
 from urlparse import urlparse
 
 import requests
+import logging
 
 from curryproxy.errors import RequestError
 from curryproxy.responses import SingleResponse
@@ -49,6 +50,13 @@ class ForwardingRoute(RouteBase):
                 construct the final URL to request.
 
         """
+        # For some reason, the conf files supply a single forwarding URL
+        # but the ForwardingRoute constructor expects a list. Convert
+        # here if necessary.
+        msg = "constructing forwarding route: %s -> %s"
+        logging.debug(msg, url_patterns, forwarding_url)
+        if isinstance(url_patterns, str):
+            url_patterns = [url_patterns]
         self._url_patterns = url_patterns
         self._forwarding_url = forwarding_url
 
