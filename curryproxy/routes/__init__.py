@@ -36,5 +36,5 @@ ForwardingRoute = forwarding_route.ForwardingRoute
 StatusRoute = status_route.StatusRoute
 
 # The only config functions callers should ever need.
-load = config.load
-make = config.make
+from curryproxy.helpers import load
+from curryproxy.config import make

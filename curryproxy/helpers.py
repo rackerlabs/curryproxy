@@ -154,104 +154,39 @@ def intrange(rangespec):
         return range(first, last+1)
 
 
-class ConfigLoader(object):
-    """ Function lookalike that loads config files
+def load(path):
+    """ Load a YAML config file """
 
-    Hides the details of looking for and loading a file from the
-    caller.
-    """
-    def __init__(self):
-        self.formats = {".yaml": yaml.safe_load,
-                        ".json": json.load,
-                        ".ini": self.confparserloader,
-                        ".conf": self.logconfloader}
-
-    @staticmethod
-    def confparserloader(f):
-        """ For now this returns a configparser
-
-        FIXME: should unpack the data in the configparser into a dict or
-        dict-like object (or does configparser already work that way?
-        I'm not sure.
-        """
-
-        cp = ConfigParser()
-        cp.readfp(f)
-        return cp
-
-    @staticmethod
-    def logconfloader(f):
-        """ Load logging.conf files
-
-        This one doesn't return anything and shouldn't need to. It just
-        passes the file to logging.fileConfig()
-        """
-        # Doesn't return data. Shouldn't need to.
-        logging.config.fileConfig(f)
-
-    def __call__(self, path):
-        return self._load(path)
-
-    def _load(self, path):
-        """ Load a data structure from a file path
-
-        Args:
-            filename: The file to load
-
-        Returns:
-            Whatever data structure is in the file.
-
-        Supports yaml, json, and configparser files, detecting file type
-        by extension.  Others can be added easily enough.
-
-        Callers can query Loader.formats for a list of known formats.
-        """
-        ext = os.path.splitext(path)[1]
-        loaders = self.formats
-        if ext not in loaders:
-            msg = "Don't know how to load {}. Supported filetypes: {}"
-            filetypes = ", ".join(loaders.keys())
-            raise ValueError(msg.format(path, filetypes))
-        loader = loaders[ext]
-
+    logging.debug("Loading file: %s", path)
+    try:
         with open(path) as f:
-            try:
-                logging.debug("Loading %s using %s", path, loader)
-                return loader(f)
-            except (ValueError, yaml.YAMLError) as e:
-                # Different loaders can raise different error types on bad
-                # data. Turn them into ConfigErrors so callers don't need to
-                # depend on loader internals to catch the exceptions.
-                msg = "Problem loading file: {}. The error was: {}"
-                msg = msg.format(path, str(e))
-                raise ConfigError(msg)
+            return yaml.safe_load(path)
+    except yaml.YAMLError as e:
+        # Turn these into ConfigErrors so callers don't need to
+        # depend on loader internals to catch the exceptions
+        msg = "Problem loading file: {}. The error was: {}"
+        msg = msg.format(path, str(e))
+        raise ConfigError(msg)
 
-    def search(self, name, directory, loaders=None):
-        """ Look for a config file of any supported type
+def init_log(path):
+    """ Set up logging """
+    try:
+        conf = load(path)
+    except IOError:
+        # This could be intentional (e.g. no log file provided), so don't
+        # worry about it. But do note it.
+        logging.warning("Couldn't load logging configuration from %s", path)
+        logging.warning("Python logging defaults will be used")
+    except Exception as e:
+        # Something else went wrong -- something unexpected. Most likely
+        # cause is a malformed yaml file. Better crash so it's obvious.
+        logging.error("Problem with log configuration: %s", e)
+        raise
+    else:
+        logging.config.dictConfig(conf)
 
-        name -- The root name of the file you're looking for
-        directory -- The directory to look in
-        loaders -- a extension-to-loader dictionary
-
-        You can use *loaders* to pass a custom loader for a given
-        extension.
-        """
-
-        logging.debug("searching for %s in `%s`", name, directory)
-        for ext in self.formats:
-            path = os.path.join(directory, name) + ext
-            logging.debug("trying: " + path)
-            try:
-                data = self._load(path)
-                logging.debug("found %s at %s", name, path)
-                return data
-            except IOError:
-                pass
-
-        # No file found
-        msg = "Couldn't find '{}' under '{}' with any extension"
-        logging.debug(msg)
-        raise IOError(msg.format(name, directory))
-
-
-load = ConfigLoader()
+    logging.info("Logging initialized from %s", path)
+    logging.error("[ERROR MESSAGE TEST]")
+    logging.warn("[WARNING MESSAGE TEST]")
+    logging.info("[INFO MESSAGE TEST]")
+    logging.debug("[DEBUG MESSAGE TEST]")

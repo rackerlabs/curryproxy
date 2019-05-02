@@ -57,36 +57,3 @@ class Test_Config_Load(testtools.TestCase):
     def test_broken_config(self):
         path = 'curryproxy/tests/etc/routes.invalid_json.json'
         self.assertRaises(ConfigError, config.load, path)
-
-
-class Test_Config_Version(testtools.TestCase):
-    def test_confver_detection_v1(self):
-        path = 'curryproxy/tests/etc/routes.v1.json'
-        conf = helpers.load(path)
-        self.assertEqual(1, config.version(conf))
-
-    def test_confver_detection_v2(self):
-        path = 'curryproxy/tests/etc/routes.v2.yaml'
-        conf = helpers.load(path)
-        self.assertEqual(2, config.version(conf))
-
-    def test_confver_bogus_input(self):
-        self.assertRaises(ConfigError, config.version, None)
-
-
-class Test_Config_Normalize(testtools.TestCase):
-    def test_config_normalize_v1(self):
-        path = "curryproxy/tests/etc/routes.v{}.{}"
-        v2yaml = config.normalize(helpers.load(path.format(2, "yaml")))
-        v1yaml = config.normalize(helpers.load(path.format(1, "yaml")))
-        v1json = config.normalize(helpers.load(path.format(1, "json")))
-
-        # It's simpler to compare the re-serialization of the data
-        # structures than the data structures themselves. Just have to
-        # make sure dict key orders are sorted.
-
-        def dump(data):  # Makes the comparisons easier to read
-            return json.dumps(data, sort_keys=True)
-
-        self.assertEqual(dump(v2yaml), dump(v1yaml))
-        self.assertEqual(dump(v2yaml), dump(v1json))
