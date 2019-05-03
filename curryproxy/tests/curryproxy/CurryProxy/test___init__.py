@@ -12,41 +12,40 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from mock import patch, mock_open
+from mock import patch
 import testtools
 
+import curryproxy
 from curryproxy import CurryProxy
+from curryproxy.errors import ConfigError
 
 
 class Test___Init__(testtools.TestCase):
     def setUp(self):
         super(Test___Init__, self).setUp()
-        self.etc = "curryproxy/tests/etc"
+        self.etc = "curryproxy/tests/etc/"
 
-    def test_configs_provided(self):
-        routes = self.etc + "/routes.empty.yaml"
-        logconf = self.etc + "/logging.conf"
-        curry = CurryProxy(routes, logconf)
+    def test_init(self):
+        curry = CurryProxy(self.etc)
         self.assertIsInstance(curry, CurryProxy)
+        # FIXME: test logging/routes properly initialized...not sure
+        # what else to test.
 
-    def test_configs_from_confdir(self):
-        curry = CurryProxy(confdir=self.etc)
-        self.assertIsInstance(curry, CurryProxy)
+    def test_init_noetc(self):
+        self.assertRaises(IOError, CurryProxy, "/dev/null")
 
-    def test_routes_search_path(self):
-        with patch("curryproxy.helpers.load.search") as search:
-            search.return_value = {}
-            # Provide logging but not routes, so it does a search
-            # for routes.
-            logconf = self.etc + "/logging.conf"
-            CurryProxy(logging_config=logconf, confdir=self.etc)
-            search.assert_called_with('routes', self.etc)
+    def test_broken_routes_file(self):
+        # Replace routes.yaml with bad.yaml. Simulates a bad conf file
+        # without having to keep a separate "bad" directory
+        real_load = curryproxy.helpers.load
+        def mocked_load(filename):
+            filename = filename.replace('routes.yaml', 'bad.yaml')
+            return real_load(filename)
 
-    def test_logging_search_path(self):
-        with patch("curryproxy.helpers.load.search") as search:
-            search.return_value = {"version" : 1}
-            # Provide routes but not logging, so it does a search
-            # for logging.
-            routes = self.etc + "/routes.empty.yaml"
-            CurryProxy(routes, confdir=self.etc)
-            search.assert_called_with('logging', self.etc)
+        with patch('curryproxy.helpers.load', side_effect=mocked_load) as load:
+            self.assertRaises(ConfigError, CurryProxy, self.etc)
+            load.assert_called_with(self.etc + 'routes.yaml')
+
+    def test_broken_routes_data(self):
+        with patch('curryproxy.routes.make', side_effect=ConfigError):
+            self.assertRaises(ConfigError, CurryProxy, self.etc)

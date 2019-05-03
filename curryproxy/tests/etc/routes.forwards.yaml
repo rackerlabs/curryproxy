@@ -1,0 +1,2 @@
+forwards:
+  https://api.example.com/v1.0/: https://1.api.example.com/v1.0/

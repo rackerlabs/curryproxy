@@ -24,18 +24,19 @@ class Test_Match_Route(TestCase):
     def setUp(self):
         super(Test_Match_Route, self).setUp()
 
-        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json',
-                                'curryproxy/tests/etc/logging.console.conf')
+        fwdconf = {
+            'forwards': {
+                'https://www.example.com': 'https://new.example.com'}}
+
+        self.src = "https://www.example.com"
+        self.tgt = "https://new.example.com"
+        self.curry = CurryProxy('curryproxy/tests/etc/')
+        self.forward = next(config.make({'forwards': {self.src: self.tgt}}))
 
     def test_match(self):
-        route_config = {'route': 'https://www.example.com',
-                        'forwarding_url': 'https://new.example.com'}
-        conf = config.normalize([route_config])
-        route = next(config.make(conf))
+        route = self.forward
         self.curry._routes.append(route)
-
-        matched_route = self.curry._match_route('https://www.example.com/path')
-
+        matched_route = self.curry._match_route(self.src + '/path')
         self.assertEqual(route, matched_route)
 
     def test_match_first_route(self):
@@ -68,16 +69,12 @@ class Test_Match_Route(TestCase):
     def test_unmatched_no_matching_routes(self):
         route_config = {'route': 'https://www.example.com',
                         'forwarding_url': 'https://new.example.com'}
-
-        conf = config.normalize([route_config])
-        routes = config.make(conf)
-        self.curry._routes.extend(routes)
-
+        route = self.forward
+        self.curry._routes.append(route)
         with ExpectedException(RequestError):
             self.curry._match_route('https://1.www.example.com/path')
 
     def test_unmatched_no_routes(self):
-        self.assertEqual(0, len(self.curry._routes))
-
+        self.curry._routes = []  # Ew
         with ExpectedException(RequestError):
             self.curry._match_route('https://www.example.com')

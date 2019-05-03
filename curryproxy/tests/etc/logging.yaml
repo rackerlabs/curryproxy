@@ -1,7 +1,8 @@
 version: 1
 root:
   level: INFO
-  handlers: console
+  handlers:
+    - console
 loggers:
   curry.yaml: {} # So we can see if this file was processed.
 handlers:

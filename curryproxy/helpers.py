@@ -160,13 +160,11 @@ def load(path):
     logging.debug("Loading file: %s", path)
     try:
         with open(path) as f:
-            return yaml.safe_load(path)
+            return yaml.safe_load(f)
     except yaml.YAMLError as e:
         # Turn these into ConfigErrors so callers don't need to
         # depend on loader internals to catch the exceptions
-        msg = "Problem loading file: {}. The error was: {}"
-        msg = msg.format(path, str(e))
-        raise ConfigError(msg)
+        raise ConfigError(str(e))
 
 def init_log(path):
     """ Set up logging """

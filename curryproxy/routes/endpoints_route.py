@@ -225,6 +225,9 @@ class EndpointsRoute(RouteBase):
         return None
 
     def _log_responses(self, request, responses):
+        # FIXME: This is checking the level on the named logger
+        # curryproxy.routes.endpoints_route, but then actually logging
+        # to the root logger. Probably not what was intended.
         if logging.getLogger(__name__).getEffectiveLevel() > logging.DEBUG:
             return
 
