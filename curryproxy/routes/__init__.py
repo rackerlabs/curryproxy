@@ -28,7 +28,6 @@ Classes:
 from curryproxy.routes import endpoints_route
 from curryproxy.routes import forwarding_route
 from curryproxy.routes import status_route
-from curryproxy.routes import config
 
 # Hoist classes into the package namespace
 EndpointsRoute = endpoints_route.EndpointsRoute
@@ -37,4 +36,4 @@ StatusRoute = status_route.StatusRoute
 
 # The only config functions callers should ever need.
 from curryproxy.helpers import load
-from curryproxy.config import make
+from .config import make

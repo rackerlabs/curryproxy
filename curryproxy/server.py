@@ -19,6 +19,7 @@ Classes:
         responses.
 
 """
+import os
 import json
 import logging
 import logging.config
@@ -53,7 +54,8 @@ class CurryProxy(object):
         """
 
         # Configure logging first (should this go elsewhere?)
-        helpers.init_log(os.path.join(confdir, LOGCONF_FILENAME))
+        path = os.path.join(confdir, LOGCONF_FILENAME)
+        helpers.init_log(path)
 
         # Now routes
         path = os.path.join(confdir, ROUTES_FILENAME)
@@ -61,17 +63,16 @@ class CurryProxy(object):
         try:
             conf = helpers.load(path)
         except Exception as e:
-            logging.critical("Error loading routes from %s", path)
-            logging.critical("%s", e)
+            logging.exception("Error loading routes from %s", path)
             raise
 
         logging.info("Routes file loaded, setting up routes")
         try:
             self._routes = list(curryproxy.routes.make(conf))
         except Exception as e:
-            logging.critical("Failure constructing routes: %s", e)
+            logging.exception("Exception while constructing routes:")
             raise
-        logging.info("Initialization complete")
+        logging.info("Initialization complete, routes: %s", len(self._routes))
 
     @exception_wrapper
     @profile_wrapper

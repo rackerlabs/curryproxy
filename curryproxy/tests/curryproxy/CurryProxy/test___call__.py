@@ -26,14 +26,13 @@ class Test__Call__(TestCase):
     def setUp(self):
         super(Test__Call__, self).setUp()
 
-        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json',
-                                'curryproxy/tests/etc/logging.console.conf')
+        self.curry = CurryProxy('curryproxy/tests/etc')
 
     def test_matched_route(self):
         # Setup route
-        self.route_config = {'route': 'https://www.example.com',
-                             'forwarding_url': 'https://new.example.com'}
-        conf = config.normalize([self.route_config])
+        conf = {
+            'forwards': {
+                'https://www.example.com': 'https://new.example.com'}}
         self.routes = config.make(conf)
         self.curry._routes.extend(self.routes)
 
