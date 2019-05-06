@@ -28,12 +28,14 @@ import logging
 import re
 import urllib
 import urlparse
+from functools import partial
 
 import grequests
+from requests.exceptions import ConnectionError
 
+from curryproxy import helpers
 from curryproxy.errors import ConfigError
 from curryproxy.errors import RequestError
-from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
 from curryproxy.responses import MultipleResponse
@@ -110,7 +112,13 @@ class EndpointsRoute(RouteBase):
                                       allow_redirects=False,
                                       verify=True)
                     for destination_url in destination_urls)
-        requests_responses = grequests.map(requests, stream=True)
+
+        exhandler = partial(helpers.log_failures, environ=request.environ)
+        requests_responses = grequests.map(
+                requests,
+                stream=True,
+                exception_handler=exhandler
+                )
 
         self._log_responses(request, requests_responses)
         requests_responses = self._filter_responses(requests_responses)
@@ -119,10 +127,6 @@ class EndpointsRoute(RouteBase):
         if None in requests_responses:
             response = MetadataResponse(request, requests_responses)
             response.response.status = 504
-            request_uuid = request.environ[ENVIRON_REQUEST_UUID_KEY]
-            logging.error('Unable to connect to one or more backend '
-                          'endpoints: {0}'.format(', '.join(destination_urls)),
-                          extra={'request_uuid': request_uuid})
         elif ('Proxy-Aggregator-Body' in request.headers
                 and request.headers['Proxy-Aggregator-Body'].lower()
                 == 'response-metadata'):

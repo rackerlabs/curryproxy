@@ -15,6 +15,7 @@
 import json
 import time
 import uuid
+import logging
 
 import grequests
 from mock import patch
@@ -22,6 +23,7 @@ from testtools import ExpectedException
 from testtools import TestCase
 from webob import Request
 
+from curryproxy import helpers
 from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 from curryproxy.responses import ErrorResponse
 from curryproxy.responses import MetadataResponse
@@ -311,20 +313,6 @@ class Test__Call__(TestCase):
                          if i is not None and i['status'] == '200 OK']
         self.assertTrue(len(response_200s) == 1)
 
-    def test_timeout_logged(self):
-        request = Request.blank('http://example.com/1,2/path')
-        request.environ[ENVIRON_REQUEST_UUID_KEY] = uuid.uuid4()
-
-        headers = {'Content-Type': 'application/json'}
-        response1 = None
-        response2 = RequestsResponseMock(status_code=200, headers=headers)
-        self.grequests_map.return_value = [response1, response2]
-
-        with patch('logging.error') as le:
-            self.endpoints_route(request)
-
-            self.assertTrue(le.called)
-
     def test_timeout_status_code(self):
         request = Request.blank('http://example.com/1,2/path')
         request.environ[ENVIRON_REQUEST_UUID_KEY] = uuid.uuid4()
@@ -342,3 +330,51 @@ class Test__Call__(TestCase):
         super(Test__Call__, self).tearDown()
 
         self.patcher.stop()
+
+class Test__call__Unmocked(TestCase):
+    # Mocking .map keeps us from testing things like the map exception
+    # callback. Tests that need map working correctly are here for now.
+    # Bit of a kludge. Probably map should be patched in individual
+    # tests that need it.
+
+    def setUp(self):
+        super(Test__call__Unmocked, self).setUp()
+        url_patterns = ['http://example.com/{Endpoint_IDs}/']
+        endpoint = {'test': 'http://example.com/'}
+        endpoints = {'1': 'http://1.example.com/',
+                     '2': 'http://2.example.com/'}
+        endpoints_for_ignore = {'1': 'http://1.example.com/',
+                                '2': 'http://2.example.com/',
+                                '3': 'http://3.example.com/',
+                                '4': 'http://4.example.com/',
+                                '5': 'http://5.example.com/'}
+        self.endpoint_route = EndpointsRoute(url_patterns, endpoint, [], [])
+        self.endpoints_route = EndpointsRoute(url_patterns, endpoints, [], [])
+        self.endpoints_route_with_ignore = EndpointsRoute(url_patterns,
+                                                          endpoints_for_ignore,
+                                                          [],
+                                                          [0, 400, 500, 501,
+                                                           502, 503])
+    def test_request_failure_logging(self):
+        # Doesn't work, mocking grequests.map means the exception
+        # handler doesn't ever get called?
+        #
+        # I think what I want to mock is whatever map() is calling, so
+        # it gets an exception instead of whatever it expected.
+
+        reqid = uuid.uuid4()
+        request = Request.blank('http://example.com/1,2/path')
+        request.environ[ENVIRON_REQUEST_UUID_KEY] = reqid
+
+        with patch('curryproxy.helpers.log_failures', wraps=helpers.log_failures) as lf:
+            with patch('logging.error', wraps=logging.error) as log:
+                self.endpoints_route(request)
+                lf.assert_called()
+                log.assert_called()
+                called_uuid = log.call_args[1]['extra']['request_uuid']
+                called_url = log.call_args[0][2]
+                self.assertEqual(called_uuid, reqid)
+                # Can't do assertEqual, order of map's calls is
+                # nondeterministic so we might check for 1.example.com
+                # and get 2.example.com, or vice-versa.
+                self.assertIn('example.com/path', called_url)
