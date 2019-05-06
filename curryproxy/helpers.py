@@ -79,6 +79,24 @@ def exception_wrapper(function):
     return wrapper
 
 
+def log_failures(request, exception, environ=None):
+    """ Log a grequest exception
+
+    Intended for use as an exception handler for grequests.map(). Note
+    that map() doesn't preserve the request's environment. You almost
+    certainly want to partial() this function, supply the environment
+    there, and set the partialed version as map's exception handler.
+    """
+
+    # We have the option of returning something here; if we did it would
+    # be included in the returned list from map(). As it is, the
+    # offending request appears as None.
+
+    msg = "%s reaching endpoint URL: %s"
+    extra = {'request_uuid': environ[ENVIRON_REQUEST_UUID_KEY]}
+    logging.error(msg, type(exception).__name__, request.url, extra=extra)
+
+
 def profile_wrapper(function):
     """Function wrapper that logs a profiled report of the wrapped function.
 
