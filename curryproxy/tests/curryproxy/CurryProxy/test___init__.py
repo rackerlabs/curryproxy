@@ -15,29 +15,38 @@
 from mock import patch
 import testtools
 
+import curryproxy
 from curryproxy import CurryProxy
+from curryproxy.errors import ConfigError
 
 
 class Test___Init__(testtools.TestCase):
     def setUp(self):
         super(Test___Init__, self).setUp()
-        self.patcher = patch('logging.config')
-        self.patcher.start()
+        self.etc = "curryproxy/tests/etc/"
 
-    def test_config_default(self):
-        patch_path = 'curryproxy.CurryProxy._process_routes'
-        with patch(patch_path) as mocked_method:
-            CurryProxy()
+    def test_init(self):
+        curry = CurryProxy(self.etc)
+        self.assertIsInstance(curry, CurryProxy)
+        # FIXME: test logging/routes properly initialized...not sure
+        # what else to test.
 
-            default_path = '/etc/curryproxy/routes.json'
-            mocked_method.assert_called_with(default_path)
+    def test_init_noetc(self):
+        self.assertRaises(IOError, CurryProxy, "/dev/null")
 
-    def test_config_supplied(self):
-        route_file_path = 'curryproxy/tests/etc/routes.forwarding_address.json'
-        curry = CurryProxy(route_file_path)
+    def test_broken_routes_file(self):
+        # Replace routes.yaml with bad.yaml. Simulates a bad conf file
+        # without having to keep a separate "bad" directory
+        real_load = curryproxy.helpers.load
 
-        self.assertEqual(1, len(curry._routes))
+        def mocked_load(filename):
+            filename = filename.replace('routes.yaml', 'bad.yaml')
+            return real_load(filename)
 
-    def tearDown(self):
-        super(Test___Init__, self).tearDown()
-        self.patcher.stop()
+        with patch('curryproxy.helpers.load', side_effect=mocked_load) as load:
+            self.assertRaises(ConfigError, CurryProxy, self.etc)
+            load.assert_called_with(self.etc + 'routes.yaml')
+
+    def test_broken_routes_data(self):
+        with patch('curryproxy.routes.make', side_effect=ConfigError):
+            self.assertRaises(ConfigError, CurryProxy, self.etc)

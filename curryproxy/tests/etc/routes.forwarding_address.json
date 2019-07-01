@@ -1,6 +1,0 @@
-[
-    {
-        "route": "https://api.example.com/v1.0/",
-        "forwarding_url": "https://1.api.example.com/v1.0/"
-    }
-]

@@ -16,9 +16,9 @@ from mock import patch
 from testtools import TestCase
 from webob import Response
 
+import curryproxy.routes.config as config
 from curryproxy import CurryProxy
 from curryproxy.routes import ForwardingRoute
-from curryproxy.routes import route_factory
 from curryproxy.tests.utils import StartResponseMock
 
 
@@ -26,15 +26,15 @@ class Test__Call__(TestCase):
     def setUp(self):
         super(Test__Call__, self).setUp()
 
-        self.curry = CurryProxy('curryproxy/tests/etc/routes.empty.json',
-                                'curryproxy/tests/etc/logging.console.conf')
+        self.curry = CurryProxy('curryproxy/tests/etc')
 
     def test_matched_route(self):
         # Setup route
-        self.route_config = {'route': 'https://www.example.com',
-                             'forwarding_url': 'https://new.example.com'}
-        self.route = route_factory.parse_dict(self.route_config)
-        self.curry._routes.append(self.route)
+        conf = {
+            'forwards': {
+                'https://www.example.com': 'https://new.example.com'}}
+        self.routes = config.make(conf)
+        self.curry._routes.extend(self.routes)
 
         # Mocked response
         mock_response = Response()

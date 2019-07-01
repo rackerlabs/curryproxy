@@ -25,11 +25,14 @@ Classes:
     StatusRoute: Route to check the status of CurryProxy.
 
 """
-from curryproxy.routes import endpoints_route
-from curryproxy.routes import forwarding_route
-from curryproxy.routes import status_route
+# Not sure if these are still necessary
+from curryproxy.routes.endpoints_route import EndpointsRoute
+from curryproxy.routes.forwarding_route import ForwardingRoute
+from curryproxy.routes.status_route import StatusRoute
 
-# Hoist classes into the package namespace
-EndpointsRoute = endpoints_route.EndpointsRoute
-ForwardingRoute = forwarding_route.ForwardingRoute
-StatusRoute = status_route.StatusRoute
+# The only config functions callers should ever need.
+from curryproxy.helpers import load
+from .config import make
+
+# Get lint to shut up.
+__all__ = ['EndpointsRoute', 'ForwardingRoute', 'StatusRoute', 'make', 'load']

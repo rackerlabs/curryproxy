@@ -16,7 +16,7 @@ import logging
 import unittest
 
 import mock
-from mock import patch
+from mock import patch, Mock, MagicMock
 from testtools import TestCase
 
 from curryproxy.routes import EndpointsRoute
@@ -43,19 +43,17 @@ class Test__Log_Response(TestCase):
     # FIXME: I do not think that this does quite what was intended.
     # Always fails.
     @unittest.skip("FIXME: I do not think that this does quite what was "
-                   "intended. Always fails.")
+                   "intended. Always fails. See comment in log_responses.")
     def test_log_level_notset(self):
         self.logger.setLevel(logging.NOTSET)
 
-        self.endpoints_route._log_responses(mock.Mock(), mock.MagicMock())
+        self.endpoints_route._log_responses(mock.Mock(), [MagicMock(), None])
 
         self.assertTrue(self.logging_debug.called)
 
     def test_log_level_debug(self):
         self.logger.setLevel(logging.DEBUG)
-
-        self.endpoints_route._log_responses(mock.Mock(), mock.MagicMock())
-
+        self.endpoints_route._log_responses(Mock(), [MagicMock(), None])
         self.assertTrue(self.logging_debug.called)
 
     def test_log_level_info(self):
