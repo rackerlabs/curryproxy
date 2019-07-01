@@ -23,6 +23,7 @@ import json
 import platform
 
 from curryproxy.responses.response_base import ResponseBase
+from curryproxy.version import version
 
 
 class StatusResponse(ResponseBase):
@@ -40,6 +41,7 @@ class StatusResponse(ResponseBase):
         super(StatusResponse, self).__init__(request)
 
         self._response.headers['Content-Type'] = 'application/json'
-        self._response.body = json.dumps({'hostname': platform.node()})
-
+        out = {'hostname': platform.node(),
+               'version': version}
+        self._response.body = json.dumps(out)
         self._fix_headers()

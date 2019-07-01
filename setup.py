@@ -34,7 +34,8 @@ deps = {"install": readdeps("deps/pip.install.txt"),
 
 setup(
     name='curryproxy',
-    version='1.1.2',
+    setup_requires=['setuptools_scm'],
+    use_scm_version={'write_to': 'curryproxy/version.txt'},
     description='A proxy and aggregator for querying multiple instances of an '
     'API spread across globally distributed data centers.',
     long_description=open('README.rst').read(),
