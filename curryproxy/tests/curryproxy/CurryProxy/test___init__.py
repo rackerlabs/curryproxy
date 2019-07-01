@@ -38,6 +38,7 @@ class Test___Init__(testtools.TestCase):
         # Replace routes.yaml with bad.yaml. Simulates a bad conf file
         # without having to keep a separate "bad" directory
         real_load = curryproxy.helpers.load
+
         def mocked_load(filename):
             filename = filename.replace('routes.yaml', 'bad.yaml')
             return real_load(filename)

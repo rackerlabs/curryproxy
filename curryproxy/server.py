@@ -33,10 +33,10 @@ from curryproxy.errors import RequestError
 from curryproxy.helpers import ENVIRON_REQUEST_UUID_KEY
 from curryproxy.helpers import exception_wrapper
 from curryproxy.helpers import profile_wrapper
-from curryproxy.errors import ConfigError
 
 LOGCONF_FILENAME = "logging.yaml"
 ROUTES_FILENAME = "routes.yaml"
+
 
 class CurryProxy(object):
     """WSGI callable responsible for handling requests and returning responses.
@@ -62,14 +62,14 @@ class CurryProxy(object):
         logging.info("Loading routes file from %s", path)
         try:
             conf = helpers.load(path)
-        except Exception as e:
+        except Exception:
             logging.exception("Error loading routes from %s", path)
             raise
 
         logging.info("Routes file loaded, setting up routes")
         try:
             self._routes = list(curryproxy.routes.make(conf))
-        except Exception as e:
+        except Exception:
             logging.exception("Exception while constructing routes:")
             raise
         logging.info("Initialization complete, routes: %s", len(self._routes))

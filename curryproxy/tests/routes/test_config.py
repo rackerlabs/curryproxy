@@ -1,8 +1,5 @@
-import json
-
 import testtools
 
-import curryproxy
 import curryproxy.helpers as helpers
 import curryproxy.routes.config as config
 from curryproxy.routes import StatusRoute
@@ -11,6 +8,7 @@ from curryproxy.routes import EndpointsRoute
 from curryproxy.routes import make
 from curryproxy.routes import load
 from curryproxy.errors import ConfigError
+
 
 class Test_Config_Make(testtools.TestCase):
     def setUp(self):

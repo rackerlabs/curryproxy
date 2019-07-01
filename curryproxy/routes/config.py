@@ -1,4 +1,3 @@
-import itertools
 import logging
 
 import curryproxy.helpers as helpers

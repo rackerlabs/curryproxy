@@ -32,14 +32,11 @@ Attributes:
         outlined at http://docs.python.org/2/howto/logging.html#logging-levels.
 
 """
-import os
 import cProfile
 import logging
 import pstats
 import StringIO
 import uuid
-import json
-from ConfigParser import ConfigParser
 
 import yaml
 
@@ -165,6 +162,7 @@ def load(path):
         # Turn these into ConfigErrors so callers don't need to
         # depend on loader internals to catch the exceptions
         raise ConfigError(str(e))
+
 
 def init_log(path):
     """ Set up logging """

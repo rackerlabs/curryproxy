@@ -23,11 +23,6 @@ from curryproxy.errors import RequestError
 class Test_Match_Route(TestCase):
     def setUp(self):
         super(Test_Match_Route, self).setUp()
-
-        fwdconf = {
-            'forwards': {
-                'https://www.example.com': 'https://new.example.com'}}
-
         self.src = "https://www.example.com"
         self.tgt = "https://new.example.com"
         self.curry = CurryProxy('curryproxy/tests/etc/')
@@ -67,8 +62,6 @@ class Test_Match_Route(TestCase):
         self.assertEqual(routes[0], matched_route)
 
     def test_unmatched_no_matching_routes(self):
-        route_config = {'route': 'https://www.example.com',
-                        'forwarding_url': 'https://new.example.com'}
         route = self.forward
         self.curry._routes.append(route)
         with ExpectedException(RequestError):

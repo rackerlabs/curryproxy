@@ -1,8 +1,4 @@
-import logging
-from ConfigParser import ConfigParser
-
 import testtools
-from mock import patch
 
 from curryproxy.helpers import load
 from curryproxy.errors import ConfigError
