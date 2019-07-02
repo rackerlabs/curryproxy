@@ -43,6 +43,7 @@ setup(
     author_email='bryan.davidson@rackspace.com',
     url='https://github.com/rackerlabs/curryproxy',
     packages=find_packages(),
+    include_package_data=True,
     install_requires=deps['install'],
     license='Apache 2.0',
     tests_require=deps['tests'],
