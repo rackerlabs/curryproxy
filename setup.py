@@ -35,6 +35,7 @@ deps = {"install": readdeps("deps/pip.install.txt"),
 setup(
     name='curryproxy',
     setup_requires=['setuptools_scm'],
+    python_requires='>=3',
     use_scm_version={'write_to': 'curryproxy/version.txt'},
     description='A proxy and aggregator for querying multiple instances of an '
     'API spread across globally distributed data centers.',
@@ -56,8 +57,8 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: Proxy Servers',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
         'Topic :: Software Development :: Libraries :: Python Modules'
