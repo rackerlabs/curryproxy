@@ -18,9 +18,9 @@ def make(routeconfig):
         # Note: there is only ever one status "route", consisting of a list
         # of urls.
         yield StatusRoute(routeconfig['status'])
-    for pattern, dest in routeconfig.get('forwards', {}).items():
+    for pattern, dest in list(routeconfig.get('forwards', {}).items()):
         yield ForwardingRoute(pattern, dest)
-    for name, route in routeconfig.get('routes', {}).items():
+    for name, route in list(routeconfig.get('routes', {}).items()):
         yield make_endpoint(name, route)
 
 

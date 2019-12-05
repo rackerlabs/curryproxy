@@ -75,34 +75,34 @@ class Test_Merge_Responses(TestCase):
 
         json_response = json.loads(multiple_response.response.body)
 
-        json_booleans = filter(lambda x: x == json_boolean, json_response)
-        self.assertEquals(2, len(json_booleans))
+        json_booleans = [x for x in json_response if x == json_boolean]
+        self.assertEqual(2, len(json_booleans))
 
-        json_nulls = filter(lambda x: x == json_null, json_response)
-        self.assertEquals(2, len(json_nulls))
+        json_nulls = [x for x in json_response if x == json_null]
+        self.assertEqual(2, len(json_nulls))
 
-        json_numbers = filter(lambda x: x == json_number, json_response)
-        self.assertEquals(2, len(json_numbers))
+        json_numbers = [x for x in json_response if x == json_number]
+        self.assertEqual(2, len(json_numbers))
 
-        json_objects = filter(lambda x: x == json_object, json_response)
-        self.assertEquals(2, len(json_objects))
+        json_objects = [x for x in json_response if x == json_object]
+        self.assertEqual(2, len(json_objects))
 
-        json_strings = filter(lambda x: x == json_string, json_response)
-        self.assertEquals(2, len(json_strings))
+        json_strings = [x for x in json_response if x == json_string]
+        self.assertEqual(2, len(json_strings))
 
     def test_header_content_encoding(self):
         self.multiple_response._merge_responses()
 
-        self.assertEquals(None,
+        self.assertEqual(None,
                           self.multiple_response.response.content_encoding)
 
     def test_header_content_type(self):
         self.multiple_response._merge_responses()
 
-        self.assertEquals(self.headers['Content-Type'],
+        self.assertEqual(self.headers['Content-Type'],
                           self.multiple_response.response.content_type)
 
     def test_status(self):
         self.multiple_response._merge_responses()
 
-        self.assertEquals(200, self.multiple_response.response.status_code)
+        self.assertEqual(200, self.multiple_response.response.status_code)

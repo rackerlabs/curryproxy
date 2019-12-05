@@ -33,7 +33,7 @@ class Test_Resolve_Query_String(TestCase):
             '1'
         )
 
-        self.assertEquals(self.request_base_url + '?test=123', url)
+        self.assertEqual(self.request_base_url + '?test=123', url)
 
     def test_with_override(self):
         url = self.route._resolve_query_string(
@@ -41,7 +41,7 @@ class Test_Resolve_Query_String(TestCase):
             '1'
         )
 
-        self.assertEquals(self.request_base_url + '?test=456', url)
+        self.assertEqual(self.request_base_url + '?test=456', url)
 
     def test_no_params_for_endpoint(self):
         url = self.route._resolve_query_string(
@@ -49,7 +49,7 @@ class Test_Resolve_Query_String(TestCase):
             '2'
         )
 
-        self.assertEquals(self.request_base_url, url)
+        self.assertEqual(self.request_base_url, url)
 
     @unittest.skip("FIXME: Broken test; fails half the time because the query "
                    "order isn't guaranteed")
@@ -60,7 +60,7 @@ class Test_Resolve_Query_String(TestCase):
             '1'
         )
 
-        self.assertEquals(
+        self.assertEqual(
             self.request_base_url + '?test=123&another_test=456',
             url
         )
@@ -74,7 +74,7 @@ class Test_Resolve_Query_String(TestCase):
             '1'
         )
 
-        self.assertEquals(self.request_base_url + '?test=123', url)
+        self.assertEqual(self.request_base_url + '?test=123', url)
 
     def test_upper_case_curryproxy_parameters(self):
         url = self.route._resolve_query_string(
@@ -85,4 +85,4 @@ class Test_Resolve_Query_String(TestCase):
             'a'
         )
 
-        self.assertEquals(self.request_base_url + '?test=123', url)
+        self.assertEqual(self.request_base_url + '?test=123', url)

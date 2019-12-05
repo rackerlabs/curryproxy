@@ -12,7 +12,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import StringIO
+import io
 
 from mock import Mock
 from requests import Response
@@ -34,7 +34,7 @@ class Test__Init__(TestCase):
         self.response.reason = 'Created Custom'
         self.response.headers = {'Content-Type': 'application/json'}
         self.response_body = '{"some": "json"}'
-        output = StringIO.StringIO()
+        output = io.StringIO()
         output.write(self.response_body)
         output.seek(0)
         self.response.raw = output

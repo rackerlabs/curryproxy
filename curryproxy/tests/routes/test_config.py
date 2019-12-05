@@ -53,5 +53,5 @@ class Test_Config_Make(testtools.TestCase):
         conf = load(path)
         name = 'noerrors'
         route = config.make_endpoint(name, conf['routes'][name])
-        self.assertEquals([], route._priority_errors)
-        self.assertEquals([], route._ignore_errors)
+        self.assertEqual([], route._priority_errors)
+        self.assertEqual([], route._ignore_errors)
