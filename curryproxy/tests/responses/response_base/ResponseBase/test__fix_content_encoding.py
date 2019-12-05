@@ -23,7 +23,7 @@ class Test_Fix_Content_Encoding(TestCase):
     def setUp(self):
         super(Test_Fix_Content_Encoding, self).setUp()
 
-        self.response_data = '{"test": "json"}'
+        self.response_data = b'{"test": "json"}'
 
         response = Response()
         response.body = self.response_data

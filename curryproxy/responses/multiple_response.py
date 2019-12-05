@@ -93,7 +93,7 @@ class MultipleResponse(ResponseBase):
                 result_list += body
             else:
                 result_list.append(body)
-        self._response.body = json.dumps(result_list)
+        self._response.body = json.dumps(result_list).encode()
 
     def _aggregate_responses(self):
         """Aggregates metadata about multiple responses.

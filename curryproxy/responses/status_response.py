@@ -43,5 +43,5 @@ class StatusResponse(ResponseBase):
         self._response.headers['Content-Type'] = 'application/json'
         out = {'hostname': platform.node(),
                'version': version}
-        self._response.body = json.dumps(out)
+        self._response.body = json.dumps(out).encode()
         self._fix_headers()
