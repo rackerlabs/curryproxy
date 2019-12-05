@@ -111,7 +111,7 @@ class MultipleResponse(ResponseBase):
         if len(status_codes) > 1:
             max_status_code = max(status_codes)
             for status_code in [400, 300, 200, 100]:
-                if max_status_code / status_code == 1:
+                if max_status_code // status_code == 1:
                     self._response.status = status_code
                     break
 
