@@ -228,22 +228,14 @@ class EndpointsRoute(RouteBase):
         return None
 
     def _log_responses(self, request, responses):
-        # FIXME: This is checking the level on the named logger
-        # curryproxy.routes.endpoints_route, but then actually logging
-        # to the root logger. Probably not what was intended.
-        if logging.getLogger(__name__).getEffectiveLevel() > logging.DEBUG:
-            return
-
-        message = "Responses received for: " + str(request.url)
-        for response in responses:
-            if response is not None:
-                message += (
-                    '; ' + str(response.status_code) + ': ' + str(response.url)
-                )
+        msg = "%s responses received for: %s"
+        logging.debug(msg, len(responses), request.url)
+        for i, response in enumerate(responses):
+            if response is None:
+                logging.debug("None: Unknown")
             else:
-                message += '; None: Unknown'
-
-        logging.debug(message)
+                msg = "%s : %s : %s"
+                logging.debug(msg, i, response.status_code, response.url)
 
     def _resolve_query_string(self, url, endpoint_id):
         split_url = urllib.parse.urlsplit(url)
