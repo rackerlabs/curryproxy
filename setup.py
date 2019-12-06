@@ -24,8 +24,8 @@ def readdeps(filename):
     """
 
     with open(filename) as f:
-        return [line for line in f
-                if line and not line.startswith("#")]
+        return [line.strip() for line in f
+                if line.strip() and not line.startswith("#")]
 
 # Load dependencies
 deps = {"install": readdeps("deps/pip.install.txt"),
