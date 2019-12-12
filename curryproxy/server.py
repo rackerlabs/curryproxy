@@ -110,7 +110,7 @@ class CurryProxy(object):
             response.body = json.dumps(str(request_error)).encode()
 
         start_response(response.status, response.headerlist)
-        return response.body
+        return [response.body]
 
     def _match_route(self, request_url):
         """Matches an incoming request to a configured route.
