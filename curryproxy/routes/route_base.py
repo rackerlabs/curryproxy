@@ -21,9 +21,8 @@ Classes:
 import abc
 
 
-class RouteBase(object):
+class RouteBase(object, metaclass=abc.ABCMeta):
     """Base class for routes in CurryProxy."""
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def __call__(self, request):

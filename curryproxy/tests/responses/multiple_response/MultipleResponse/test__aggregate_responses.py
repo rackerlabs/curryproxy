@@ -32,9 +32,6 @@ class Test_Aggregate_Responses(TestCase):
         if not headers:
             headers = {'Content-Type': 'application/json'}
 
-        def decode_content():
-            pass
-
         response = RequestsResponseMock(status_code=status_code,
                                         headers=headers, body=body)
 

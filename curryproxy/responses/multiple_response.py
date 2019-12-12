@@ -93,7 +93,7 @@ class MultipleResponse(ResponseBase):
                 result_list += body
             else:
                 result_list.append(body)
-        self._response.body = json.dumps(result_list)
+        self._response.body = json.dumps(result_list).encode()
 
     def _aggregate_responses(self):
         """Aggregates metadata about multiple responses.
@@ -111,7 +111,7 @@ class MultipleResponse(ResponseBase):
         if len(status_codes) > 1:
             max_status_code = max(status_codes)
             for status_code in [400, 300, 200, 100]:
-                if max_status_code / status_code == 1:
+                if max_status_code // status_code == 1:
                     self._response.status = status_code
                     break
 

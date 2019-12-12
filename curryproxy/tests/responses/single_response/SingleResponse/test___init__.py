@@ -12,7 +12,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import StringIO
+import io
 
 from mock import Mock
 from requests import Response
@@ -33,11 +33,11 @@ class Test__Init__(TestCase):
         self.response.status_code = 201
         self.response.reason = 'Created Custom'
         self.response.headers = {'Content-Type': 'application/json'}
-        self.response_body = '{"some": "json"}'
-        output = StringIO.StringIO()
-        output.write(self.response_body)
-        output.seek(0)
-        self.response.raw = output
+        self.response.raw = io.BytesIO(b'{"some": "json"}')
+
+        self.response_body = b'{"some": "json"}'
+        self.response.raw = io.BytesIO(self.response_body)
+        self.response.raw.seek(0)
 
     def test__fix_headers(self):
         old_call = ResponseBase._fix_headers

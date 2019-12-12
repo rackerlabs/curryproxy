@@ -70,11 +70,12 @@ class ResponseBase(object):
             result['status'] = '{0} {1}'.format(response.status_code,
                                                 response.reason)
             result['headers'] = dict(response.headers)
-            result['body'] = response.content
+            result['body'] = response.text
 
             results.append(result)
 
-        self._response.body = json.dumps(results)
+        newbody = json.dumps(results, ensure_ascii=False).encode()
+        self._response.body = newbody
         self._response.content_type = 'application/json'
 
     def _fix_headers(self):

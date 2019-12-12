@@ -35,7 +35,7 @@ Attributes:
 import cProfile
 import logging
 import pstats
-import StringIO
+import io
 import uuid
 
 import yaml
@@ -120,7 +120,7 @@ def profile_wrapper(function):
 
         profile.disable()
 
-        stream = StringIO.StringIO()
+        stream = io.StringIO()
         stats = pstats.Stats(profile, stream=stream)
         stats.sort_stats('time')
         stats.print_stats()
@@ -166,7 +166,7 @@ def intrange(rangespec):
         if first > last:
             msg = "range `%s` stops before it starts"
             raise ValueError(msg, rangespec)
-        return range(first, last+1)
+        return list(range(first, last+1))
 
 
 def load(path):

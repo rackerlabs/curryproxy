@@ -66,16 +66,16 @@ probably want to run them in parallel with ``tox -p auto``.
 
 If you don't want to be that thorough (perhaps you're smoke testing a
 work in progress), you can run against only the most recent supported
-versions of dependencies with ``tox -e py27``.
+versions of dependencies with ``tox -e py36``.
 
 You can test against specific dependency versions like this:
 
 ::
 
-  tox -e py27-requests2.{2,3,4,5,6,7} -p auto
-  tox -e py27-webob1.{2,3,4,5} -p auto
-  tox -e py27-grequests0.{2,3} -p auto
-  tox -e py27-requests.latest
+  tox -e py36-requests2.{2,3,4,5,6,7} -p auto
+  tox -e py36-webob1.{2,3,4,5} -p auto
+  tox -e py36-grequests0.{2,3} -p auto
+  tox -e py36-requests.latest
 
 ``tox -e lint`` is also available, and will run various linting checks.
 

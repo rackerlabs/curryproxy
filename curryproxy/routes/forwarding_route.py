@@ -19,7 +19,7 @@ Classes:
 
 """
 import re
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 import requests
 import logging

@@ -39,7 +39,7 @@ class Test__Call__(TestCase):
         # Mocked response
         mock_response = Response()
         mock_response.status = 200
-        mock_response.body = 'Response Body'
+        mock_response.body = b'Response Body'
 
         # Create request
         environ = {'wsgi.url_scheme': 'https',
@@ -57,7 +57,7 @@ class Test__Call__(TestCase):
             # Assert
             self.assertEqual(mock_response.status, start_response.status)
             self.assertEqual(mock_response.headerlist, start_response.headers)
-            self.assertEqual(mock_response.body, response)
+            self.assertEqual([mock_response.body], response)
 
     def test_unmatched_route(self):
         environ = {'wsgi.url_scheme': 'https',

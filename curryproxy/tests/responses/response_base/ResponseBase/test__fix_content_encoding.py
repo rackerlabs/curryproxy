@@ -23,7 +23,7 @@ class Test_Fix_Content_Encoding(TestCase):
     def setUp(self):
         super(Test_Fix_Content_Encoding, self).setUp()
 
-        self.response_data = '{"test": "json"}'
+        self.response_data = b'{"test": "json"}'
 
         response = Response()
         response.body = self.response_data
@@ -41,7 +41,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
         response._fix_content_encoding()
 
-        self.assertEquals(self.response_data_gzipped, response._response.body)
+        self.assertEqual(self.response_data_gzipped, response._response.body)
 
     def test_request_gzip_response_gzip_empty(self):
         response = ResponseBase(None)
@@ -54,7 +54,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
         response._fix_content_encoding()
 
-        self.assertEquals(self.response_data_gzipped, response._response.body)
+        self.assertEqual(self.response_data_gzipped, response._response.body)
 
     def test_request_gzip_response_gzip_none(self):
         response = ResponseBase(None)
@@ -67,7 +67,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
         response._fix_content_encoding()
 
-        self.assertEquals(self.response_data_gzipped, response._response.body)
+        self.assertEqual(self.response_data_gzipped, response._response.body)
 
     def test_request_gzip_empty_response_gzip(self):
         response = ResponseBase(None)
@@ -80,7 +80,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
         response._fix_content_encoding()
 
-        self.assertEquals(self.response_data, response._response.body)
+        self.assertEqual(self.response_data, response._response.body)
 
     def test_request_gzip_empty_response_gzip_empty(self):
         response = ResponseBase(None)
@@ -93,7 +93,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
         response._fix_content_encoding()
 
-        self.assertEquals(self.response_data, response._response.body)
+        self.assertEqual(self.response_data, response._response.body)
 
     def test_request_gzip_empty_response_gzip_none(self):
         response = ResponseBase(None)
@@ -106,7 +106,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
         response._fix_content_encoding()
 
-        self.assertEquals(self.response_data, response._response.body)
+        self.assertEqual(self.response_data, response._response.body)
 
     def test_request_gzip_none_response_gzip(self):
         response = ResponseBase(None)
@@ -119,7 +119,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
         response._fix_content_encoding()
 
-        self.assertEquals(self.response_data, response._response.body)
+        self.assertEqual(self.response_data, response._response.body)
 
     def test_request_gzip_none_response_gzip_empty(self):
         response = ResponseBase(None)
@@ -132,7 +132,7 @@ class Test_Fix_Content_Encoding(TestCase):
 
         response._fix_content_encoding()
 
-        self.assertEquals(self.response_data, response._response.body)
+        self.assertEqual(self.response_data, response._response.body)
 
     def test_request_gzip_none_response_gzip_none(self):
         response = ResponseBase(None)
@@ -145,4 +145,4 @@ class Test_Fix_Content_Encoding(TestCase):
 
         response._fix_content_encoding()
 
-        self.assertEquals(self.response_data, response._response.body)
+        self.assertEqual(self.response_data, response._response.body)

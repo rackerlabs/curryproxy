@@ -26,8 +26,8 @@ Attributes:
 """
 import logging
 import re
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 from functools import partial
 
 import grequests
@@ -185,7 +185,7 @@ class EndpointsRoute(RouteBase):
         endpoint_ids_group = re.match(match_expression,
                                       request_url).group("endpoint_ids")
         endpoint_ids = endpoint_ids_group.split(',')
-        endpoint_ids = [urllib.unquote(e_id) for e_id in endpoint_ids]
+        endpoint_ids = [urllib.parse.unquote(e_id) for e_id in endpoint_ids]
         endpoint_ids = [e_id.strip().lower() for e_id in endpoint_ids]
 
         # Extract trailing portion of request URL
@@ -246,9 +246,9 @@ class EndpointsRoute(RouteBase):
         logging.debug(message)
 
     def _resolve_query_string(self, url, endpoint_id):
-        split_url = urlparse.urlsplit(url)
+        split_url = urllib.parse.urlsplit(url)
 
-        query_dict = urlparse.parse_qs(split_url.query)
+        query_dict = urllib.parse.parse_qs(split_url.query)
 
         # Handle any endpoint-specific params
         if 'curryproxy' in query_dict:
@@ -262,7 +262,7 @@ class EndpointsRoute(RouteBase):
             curry_param_dict = {}
             for ep_qs_pair in curry_param_list:
                 ep_id, query_string = ep_qs_pair.split(':')
-                curry_param_dict[ep_id.lower()] = urlparse.parse_qs(
+                curry_param_dict[ep_id.lower()] = urllib.parse.parse_qs(
                     query_string
                 )
 
@@ -274,5 +274,5 @@ class EndpointsRoute(RouteBase):
         # Cannot modify split_url.query (attribute), so reconstruct using
         # individual components.
         url_attr_list = list(split_url)
-        url_attr_list[3] = urllib.urlencode(query_dict, True)
-        return urlparse.urlunsplit(url_attr_list)
+        url_attr_list[3] = urllib.parse.urlencode(query_dict, True)
+        return urllib.parse.urlunsplit(url_attr_list)
