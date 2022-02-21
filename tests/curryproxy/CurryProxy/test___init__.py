@@ -23,7 +23,7 @@ from curryproxy.errors import ConfigError
 class Test___Init__(testtools.TestCase):
     def setUp(self):
         super(Test___Init__, self).setUp()
-        self.etc = "curryproxy/tests/etc/"
+        self.etc = "tests/etc/"
 
     def test_init(self):
         curry = CurryProxy(self.etc)

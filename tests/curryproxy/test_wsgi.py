@@ -12,7 +12,7 @@ class TestWsgi(TestCase):
         # curryproxy.wsgi uses the default conf file locations, which
         # are under /etc/curryproxy. That's not appropriate for tests,
         # so let's override them before importing.
-        patched_cproxy = partial(CurryProxy, 'curryproxy/tests/etc')
+        patched_cproxy = partial(CurryProxy, 'tests/etc')
 
         # Note that python caches curryproxy.wsgi here, so you can't get
         # the unpatched version of curryproxy.wsgi.app after this

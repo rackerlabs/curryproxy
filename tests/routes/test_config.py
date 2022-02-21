@@ -13,7 +13,7 @@ from curryproxy.errors import ConfigError
 class Test_Config_Make(testtools.TestCase):
     def setUp(self):
         super(Test_Config_Make, self).setUp()
-        self.etc = "curryproxy/tests/etc/"
+        self.etc = "tests/etc/"
         self.conf = helpers.load(self.etc + "/routes.yaml")
 
     def test_make_status_routes(self):
@@ -23,7 +23,7 @@ class Test_Config_Make(testtools.TestCase):
         self.assertIsInstance(routes[0], StatusRoute)
 
     def test_make_forwarding_routes(self):
-        path = 'curryproxy/tests/etc/routes.forwarding_address.json'
+        path = 'tests/etc/routes.forwarding_address.json'
         path = self.etc + "routes.forwards.yaml"
         routes = list(make(load(path)))
         self.assertEqual(1, len(routes))

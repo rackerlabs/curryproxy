@@ -7,7 +7,7 @@ from curryproxy.errors import ConfigError
 class Test_Init_Log(TestCase):
     def setUp(self):
         super(Test_Init_Log, self).setUp()
-        self.etc = "curryproxy/tests/etc/"
+        self.etc = "tests/etc/"
 
     def test_logconf(self):
         self.skipTest("No test for logconf load yet")

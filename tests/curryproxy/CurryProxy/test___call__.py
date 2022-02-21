@@ -26,7 +26,7 @@ class Test__Call__(TestCase):
     def setUp(self):
         super(Test__Call__, self).setUp()
 
-        self.curry = CurryProxy('curryproxy/tests/etc')
+        self.curry = CurryProxy('tests/etc')
 
     def test_matched_route(self):
         # Setup route
