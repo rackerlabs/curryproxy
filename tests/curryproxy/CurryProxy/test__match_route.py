@@ -25,7 +25,7 @@ class Test_Match_Route(TestCase):
         super(Test_Match_Route, self).setUp()
         self.src = "https://www.example.com"
         self.tgt = "https://new.example.com"
-        self.curry = CurryProxy('curryproxy/tests/etc/')
+        self.curry = CurryProxy('tests/etc/')
         self.forward = next(config.make({'forwards': {self.src: self.tgt}}))
 
     def test_match(self):

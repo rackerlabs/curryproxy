@@ -7,7 +7,7 @@ from curryproxy.errors import ConfigError
 class Test_Load(testtools.TestCase):
     def setUp(self):
         super(Test_Load, self).setUp()
-        self.etc = "curryproxy/tests/etc/"
+        self.etc = "tests/etc/"
 
     def test_format_yaml(self):
         path = self.etc + "routes.empty.yaml"
