@@ -31,19 +31,24 @@ def readdeps(filename):
 deps = {"install": readdeps("deps/pip.install.txt"),
         "frozen" : readdeps("deps/pip.frozen.txt"),
         "tests"  : readdeps("deps/pip.tests.txt")}
+scmopts = {
+        "write_to": "src/curryproxy/version.txt",
+        "fallback_version": "UNKNOWN",
+        }
 
 setup(
     name='curryproxy',
-    setup_requires=['setuptools_scm'],
+    setup_requires=['setuptools_scm>=3.3.0'],
     python_requires='>=3',
-    use_scm_version={'write_to': 'curryproxy/version.txt'},
-    description='A proxy and aggregator for querying multiple instances of an '
-    'API spread across globally distributed data centers.',
+    use_scm_version={'write_to': 'src/curryproxy/version.txt'},
+    description=('A proxy and aggregator for querying multiple instances '
+                 'of an API spread across globally distributed data centers.'),
     long_description=open('README.rst').read(),
     author='Bryan Davidson',
     author_email='bryan.davidson@rackspace.com',
     url='https://github.com/rackerlabs/curryproxy',
-    packages=find_packages(),
+    packages=find_packages('src'),
+    package_dir={'':'src'},
     include_package_data=True,
     install_requires=deps['install'],
     license='Apache 2.0',
@@ -51,7 +56,7 @@ setup(
     extras_require={'tests': deps['tests'],
                     'frozen': deps['frozen']},
     test_suite='nose.collector',
-    classifiers=(
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
@@ -62,5 +67,5 @@ setup(
         'Topic :: Internet :: Proxy Servers',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
         'Topic :: Software Development :: Libraries :: Python Modules'
-    )
+    ]
 )
