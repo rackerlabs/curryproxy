@@ -201,6 +201,6 @@ def init_log(path):
 
     logging.info("Logging initialized from %s", path)
     logging.error("[ERROR MESSAGE TEST]")
-    logging.warn("[WARNING MESSAGE TEST]")
+    logging.warning("[WARNING MESSAGE TEST]")
     logging.info("[INFO MESSAGE TEST]")
     logging.debug("[DEBUG MESSAGE TEST]")
