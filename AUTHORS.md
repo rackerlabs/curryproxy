@@ -1,6 +1,6 @@
 Maintainers
 ===========
-Bryan Davidson (bryan.davidson@rackspace.com)
+Andrew Vant (andrew.vant@rackspace.com
 
 Original Authors
 ----------------

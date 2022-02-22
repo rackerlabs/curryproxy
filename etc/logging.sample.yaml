@@ -1,11 +1,15 @@
 # Example logging configuration
 #
 # This is suitable for running Curry standalone. It places detailed logs
-# under /var/log/journey, and sends abbreviated ones to stderr.
+# under /var/log/curry, and sends abbreviated ones to stderr.
 #
 # If running under gunicorn, you should probably log to syslog instead
 # -- python doesn't technically support multiple processes writing to
 # the same log file. A syslog handler is included as an example.
+#
+# For additional options, see the python dictConfig documentation:
+#
+# https://docs.python.org/3/library/logging.config.html#configuration-dictionary-schema
 
 version: 1
 root:
