@@ -13,7 +13,7 @@ upload:
 		-regex dist/curryproxy-[0-9]+\.[0-9]+\.[0-9]+\.tar.gz \
 		-or -regex dist/curryproxy-[0-9]+\.[0-9]+\.[0-9]+-py3-none-any.whl \
 		-print0 \
-		xargs -0 twine -r curryproxy upload
+		| xargs -0 twine upload -r curryproxy
 
 clean:
 	rm -rf build dist
