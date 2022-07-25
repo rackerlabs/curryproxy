@@ -8,5 +8,8 @@
 # chroot?
 
 from curryproxy import CurryProxy
+from curryproxy.helpers import elasticapm
 
 app = CurryProxy()
+if elasticapm:
+    elasticapm.instrument()

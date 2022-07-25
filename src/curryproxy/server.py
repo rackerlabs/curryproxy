@@ -94,6 +94,8 @@ class CurryProxy(object):
                 specified by PEP 333.
 
         """
+        if helpers.apm:
+            helpers.apm.begin_transaction('proxy_request')
         request = Request(environ)
         response = None
 
@@ -109,6 +111,11 @@ class CurryProxy(object):
             response.status = 403
             response.body = json.dumps(str(request_error)).encode()
 
+        if helpers.apm:
+            helpers.apm.end_transaction(
+                name=f'{request.method.upper()} {request.path}',
+                result=response.status
+            )
         start_response(response.status, response.headerlist)
         return [response.body]
 
