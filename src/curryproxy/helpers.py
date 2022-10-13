@@ -46,6 +46,16 @@ from curryproxy.errors import ConfigError
 ENVIRON_REQUEST_UUID_KEY = 'curryproxy.request_uuid'
 LOGGING_LEVEL_DEBUG = 10
 
+# For elasticapm, we need to instantiate the client object and pass it around
+# as needed to begin and end transactions. Some functionality requires calling
+# methods of elasticapm directly, so we make both the base module and the
+# client object available to import from curryproxy.helpers
+try:
+    import elasticapm
+    apm = elasticapm.Client()
+except ImportError:
+    elasticapm, apm = None, None
+
 
 class ReprString(str):
     """A str subclass overriding the __repr__ function."""
